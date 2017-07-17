@@ -1,0 +1,7 @@
+m.saeed mohiti
+1- if dynamic memory is not dellocated doesnt get free and can be cause of memory leak.
+
+2- #include <cstdio> (cout & cin)
+
+3- because of using array we don't know how much memory the program will need to allocate at run time.
+ 

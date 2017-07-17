@@ -1,0 +1,20 @@
+﻿'at_home.exe' (Win32): Loaded 'C:\Users\smohi\Desktop\sem2\OOP\5\at_home\Debug\at_home.exe'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\ntdll.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\kernel32.dll'. Symbols loaded.
+'at_home.exe' (Win32): Unloaded 'C:\Windows\SysWOW64\kernel32.dll'
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\kernel32.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\KernelBase.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\vcruntime140d.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\msvcp140d.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\ucrtbased.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\kernel.appcore.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\msvcrt.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\rpcrt4.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\sspicli.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\cryptbase.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\bcryptprimitives.dll'. Symbols loaded.
+'at_home.exe' (Win32): Loaded 'C:\Windows\SysWOW64\sechost.dll'. Symbols loaded.
+The thread 0x440 has exited with code 0 (0x0).
+The thread 0x24d4 has exited with code 0 (0x0).
+The thread 0x33e8 has exited with code 0 (0x0).
+The program '[7172] at_home.exe' has exited with code 0 (0x0).

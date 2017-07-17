@@ -1,0 +1,11 @@
+
+
+
+1)What is meant by a safe empty state?   It means ensure that the behavior of the object is well-defined 
+
+     a.	What is the safe empty state in your program? setEmpty()
+
+     b.	Why did you select this state? because it sets the variabales to zero, that ensure they are in safe empty state.
+
+
+2)Describe a case where having multiple Enrollment constructors would simplify xthe code of clients that use it.

@@ -1,0 +1,4 @@
+1- encapsulation : class AccountNumber
+   inheritance : void AccountNumber::accountNumber
+
+2- because already we used condition in the functions .so when we call them in main program,its going to execute.

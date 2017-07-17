@@ -1,0 +1,17 @@
+//reflect.txt
+//Date:  2016/10/14
+
+//Author: M.Saeed Mohiti
+
+
+1) 
+The allocateAndCopy function checks the validation of three parameters : (area, number, type)    
+if area and number are valid ,so it will copy them to our class's private members and then delete the not null member(type_)to allocate a new memory, 
+and copy the function parameter(type) to new member (type_).
+
+2)     
+the copy-construct cant release the memory and deallocation for the resources which is assosiated with current object, due to the object is set to empty. 
+when we need to deallocate any previously allocated memory that associated with the current object ,we use The assignment operator ,
+so this process will prevent the memory leak.
+
+  
