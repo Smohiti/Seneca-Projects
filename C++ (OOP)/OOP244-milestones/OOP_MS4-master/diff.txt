@@ -1,0 +1,10 @@
+
+In line number 161 of your output:
+The output should be:
+delivery date: 2017/10/12
+But your output is: 
+delivery date: 2017/10/122017/10/12
+                         ^
+-------------------------|
+Professor's character ASCII code: hex(d), dec(13)
+un-matched character ASCII code: hex(32), dec(50)

@@ -1,0 +1,7 @@
+O,123,Centerpiece,120.55,1,5,20
+O,234,DJ,600,1,0,1
+O,345,Four course dinner,85,1,0,160
+C,456,Bridal Gown,2000,1,1,1,2017/10/10
+C,567,Chair shashes,15,1,25,160,2017/10/12
+O,678,Bottled Water,0.55,0,60,200
+

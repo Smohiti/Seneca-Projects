@@ -1,0 +1,176 @@
+Script started on Fri 02 Dec 2016 10:03:00 PM EST
+msmohiti@matrix:~/oop/ms4> runms
+--OnShelf test:
+----Price validation test:
+Enter the following: 
+Sku: abc
+Name: abc
+Price: abc
+
+Sku: abc
+Name: abc
+Price: abc
+Passed Invalid Price Entry
+****press enter to continue...
+----Taxed validation test:
+Enter the following: 
+Sku: abc
+Name: abc
+Price: 10
+Taxed: abc
+
+Sku: abc
+Name: abc
+Price: 10
+Taxed: abc
+Passed Only (Y)es or (N)o are acceptable
+****press enter to continue...
+----Quantity validation test:
+Enter the following: 
+Sku: abc
+Name: abc
+Price: 10
+Taxed: y
+Quantity on hand: abc
+
+Sku: abc
+Name: abc
+Price: 10
+Taxed: y
+Quantity On hand: abc
+Passed Invalid Quantity Entry
+****press enter to continue...
+----Quantity Needed validation test:
+Enter the following: 
+Sku: abc
+Name: abc
+Price: 10
+Taxed: n
+Quantity on hand: 10
+Quantity needed: abc
+
+Sku: abc
+Name: abc
+Price: 10
+Taxed: n
+Quantity On hand: 10
+Quantity Needed: abc
+Passed Invalid Quantity Needed Entry
+****press enter to continue...
+----Display test, the output of the Program and yours must match:
+Enter the following: 
+Sku: 1234
+Name: Box
+Price: 123.45
+Taxed: y
+Quantity on hand: 1
+Quantity needed: 5
+
+Sku: 1234
+Name: Box
+Price: 123.45
+Taxed: y
+Quantity On hand: 1
+Quantity Needed: 5
+--Linear------------
+Program: 1234|Box                 | 139.50| t |   1|   5|
+  Yours: 1234|Box                 | 139.50| t |   1|   5|
+--Form Display------
+--Program: 
+upc: 1234
+name: Box
+price: 123.45
+Price after tax: 139.50
+Quantity On Hand: 1
+Quantity Needed: 5
+--Yours: 
+Sku: 1234
+Name: Box
+Price: 123.45
+Price after tax: 139.50
+Quantity On Hand: 1
+Quantity Needed: 5
+****press enter to continue...
+----Storage and loading test, the output of the Program and yours must match:
+--Store OnShelf, program: 
+O,1234,Box,123.45,0,1,5
+O,1234,Box,123.45,0,1,5
+--Store OnShelf, yours: 
+O,1234,Box,123.45,0,1,5
+O,1234,Box,123.45,0,1,5
+--Load OnShelf: 
+Program: 1234|Box                 | 123.45|   |   1|   5|
+  Yours: 1234|Box                 | 123.45|   |   1|   5|
+****press enter to continue...
+--CustomMade Item test:
+----Delivery date Validation test:
+Enter the following: 
+Sku: abc
+Name: abc
+Price: 10
+Taxed: y
+Quantity on hand: 10
+Quantity needed: 10
+Delivery date: 10/1/1
+
+Sku: abc
+Name: abc
+Price: 10
+Taxed: y
+Quantity On hand: 10
+Quantity Needed: 10
+delivery date (YYYY/MM/DD) : 10/1/1
+Passed Invalid Year in Date Entry
+****press enter to continue...
+----Display test, the output of the Program and yours must match:
+Enter the following: 
+Sku: 1234
+Name: centerpiece
+Price: 123.45
+Taxed: y
+Quantity on hand: 1
+Quantity needed: 15
+Delivery date: 2017/10/12
+
+Sku: 1234
+Name: centerpiece
+Price: 123.45
+Taxed: y
+Quantity On hand: 1
+Quantity Needed: 15
+delivery date (YYYY/MM/DD) : 2017/10/12
+--Linear------------
+Program: 1234|centerpiece         | 139.50| t |   1|  15|2017/10/12
+  Yours: 1234|centerpiece         | 139.50| t |   1|  15|2017/10/12
+--Form Display------
+--Program: 
+sku: 1234
+name: centerpiece
+price: 123.45
+Price after tax: 139.50
+Quantity On hand: 1
+Quantity Needed: 15
+delivery date: 2017/10/12
+--Yours: 
+Sku: 1234
+Name: centerpiece
+Price: 123.45
+Price after tax: 139.50
+Quantity On Hand: 1
+Quantity Needed: 15
+delivery date: 2017/10/12
+****press enter to continue...
+----Storage and loading test, the output of the Program and yours must match:
+--Store CustomMade, program: 
+C,1234,centerpiece,123.45,1,1,15,2017/10/12
+C,1234,centerpiece,123.45,1,1,15,2017/10/12
+--Store CustomMade, yours: 
+C,1234,centerpiece,123.45,1,1,15,2017/10/12
+C,1234,centerpiece,123.45,1,1,15,2017/10/12
+--Load CustomMade: 
+Program: 1234|centerpiece         | 139.50| t |   1|  15|2017/10/12
+  Yours: 1234|centerpiece         | 139.50| t |   1|  15|2017/10/12
+msmohiti@matrix:~/oop/ms4> exit
+exit
+
+Script done on Fri 02 Dec 2016 10:04:48 PM EST
