@@ -1,0 +1,40 @@
+Script started on Wed 25 Jan 2017 05:24:45 PM EST
+msmohiti@matrix:~/OOP345/w1/w1>whoami
+msmohiti
+msmohiti@matrix:~/OOP345/w1/w1> cat w1.cpp
+#include <iostream>
+#include <cstring>
+#include "CString.h"
+#include "process.h"
+using namespace std;
+//const int MAX = 3;
+
+int main(int argc, char* argv[]) {
+
+	cout << "Command Line : ";
+	for (int arg = 0; arg < argc; arg++) {
+		cout << " " << argv[arg];
+	}
+	cout << "\n";
+	if (argc == 1) {
+		cout << "Insufficient number of arguments (min 1)\n";
+		return 1;
+	}
+	cout << "Maximum number of characters stored : " << MAX << "\n";
+	for (int arg = 1; arg < argc; arg++) {
+		process(argv[arg]);
+	}
+	return 0;
+}msmohiti@matrix:~/OOP345/w1/w1> g++ -o w1 w1.cpp CString.cpp process.cpp
+msmohiti@matrix:~/OOP345/w1/w1> w1 oop345 btp305
+Command Line :  w1 oop345 btp305
+Maximum number of characters stored : 3
+0: oop
+1: btp
+msmohiti@matrix:~/OOP345/w1/w1> w1
+Command Line :  w1
+Insufficient number of arguments (min 1)
+msmohiti@matrix:~/OOP345/w1/w1> exit
+exit
+
+Script done on Wed 25 Jan 2017 05:27:09 PM EST

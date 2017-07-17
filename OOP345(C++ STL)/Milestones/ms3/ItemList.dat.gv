@@ -1,0 +1,10 @@
+digraph myGraph{
+"Item: CPU"->"CPU"[color=green];
+"Item: CPU"->"Remove CPU"[color=red];
+"Item: Memory"->"Memory"[color=green];
+"Item: Memory"->"Remove Memory"[color=red];
+"Item: GPU"->"GPU"[color=green];
+"Item: GPU"->"Remove GPU"[color=red];
+"Item: Power Supply"->"Power Supply"[color=green];
+"Item: Power Supply"->"Remove Power Supply"[color=red];
+}

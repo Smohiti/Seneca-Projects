@@ -1,0 +1,22 @@
+digraph myGraph{
+"Item: Tank"->"SetupTank"[color=green];
+"Item: Tank"->"RemoveTank"[color=red];
+"Item: Gravel"->"AddGravel"[color=green];
+"Item: Gravel"->"RemoveGravel"[color=red];
+"Item: Filter"->"AssembleFilter"[color=green];
+"Item: Filter"->"DisassembleFilter"[color=red];
+"Item: Lighting"->"InstallLighting"[color=green];
+"Item: Lighting"->"ReplaceLighting"[color=red];
+"Item: Heater"->"AddHeater"[color=green];
+"Item: Heater"->"RemoveHeater"[color=red];
+"Item: Water"->"AddWater"[color=green];
+"Item: Water"->"DrainWater"[color=red];
+"Item: Rocks"->"AddRocks"[color=green];
+"Item: Rocks"->"RemoveRocks"[color=red];
+"Item: Fish"->"AddFish"[color=green];
+"Item: Fish"->"CatchFish"[color=red];
+"Item: Coral"->"AddCoral"[color=green];
+"Item: Coral"->"RemoveCoral"[color=red];
+"Item: Toys"->"AddToys"[color=green];
+"Item: Toys"->"RemoveToys"[color=red];
+}

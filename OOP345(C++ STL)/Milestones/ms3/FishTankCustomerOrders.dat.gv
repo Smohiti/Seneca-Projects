@@ -1,0 +1,20 @@
+digraph myGraph{
+"Chloe Coleshill"->"Tank"[color=green];
+"Chloe Coleshill"->"Gravel"[color=green];
+"Chloe Coleshill"->"Water"[color=green];
+"Chloe Coleshill"->"Fish"[color=green];
+"Elliott Coleshill"->"Tank"[color=green];
+"Elliott Coleshill"->"Gravel"[color=green];
+"Elliott Coleshill"->"Water"[color=green];
+"Elliott Coleshill"->"Heater"[color=green];
+"Elliott Coleshill"->"Fish"[color=green];
+"Elliott Coleshill"->"Toys"[color=green];
+"Elliott Coleshill"->"Tank"[color=green];
+"Elliott Coleshill"->"Gravel"[color=green];
+"Elliott Coleshill"->"Water"[color=green];
+"Elliott Coleshill"->"Lighting"[color=green];
+"Elliott Coleshill"->"Heater"[color=green];
+"Elliott Coleshill"->"Rocks"[color=green];
+"Elliott Coleshill"->"Fish"[color=green];
+"Elliott Coleshill"->"Coral"[color=green];
+}

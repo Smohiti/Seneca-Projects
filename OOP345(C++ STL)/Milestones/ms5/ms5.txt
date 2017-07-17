@@ -1,0 +1,936 @@
+﻿Script started on Sat 15 Apr 2017 11:32:58 PM EDT
+msmohiti@matrix:~/oop345/ms5> whoami
+msmohiti
+msmohiti@matrix:~/oop345/ms5> cat factory.cpp machine.cpp job.h i.cpp o.cpp util.cpp
+
+#include "util.h"
+#include "i.h"
+#include "o.h"
+#include "t.h"
+#include "job.h"
+#include "machine.h"
+
+using namespace std;
+
+class Factory {
+	ItemManager im;
+	OrderManager om;
+	TaskManager tm;
+	vector<Job> jobList;
+	vector<Machine> machineList;
+public:
+	Factory(ItemManager&& IM, OrderManager&& OM, TaskManager&& TM) :im(move(IM)), om(move(OM)), tm(move(TM)) {
+		//step1: Load Machines - 1 machine per task
+		for (size_t m = 0; m < tm.size(); m++) {
+			machineList.push_back(Machine(tm.getTask(m), im));
+		}
+
+		//step2: Find source machine
+		enum { SOURCE_NOT_FOUND = -1 };
+		int sourceMachine = SOURCE_NOT_FOUND;
+
+		for (size_t m = 0; m < machineList.size(); m++) {
+			//cout << machineList[m].getName() << endl;
+			if (tm.checkSource(machineList[m].getName()) && !machineList[m].isSink()) {
+				cout << "Source found:" << machineList[m].getName() << endl;
+				if (sourceMachine == SOURCE_NOT_FOUND) {
+					sourceMachine = m;
+				}
+				else {
+					throw string("Cannot build factory: multiple source! Fix data and resubmit.");
+				}
+			}
+		}
+
+		if (sourceMachine == SOURCE_NOT_FOUND) {
+			throw string("Cannot build factory: No source found! Fix data and resubmit.");
+		}
+
+		cout << "Source Machine = " << machineList.size() << ": ";
+		machineList[sourceMachine].print(cout);
+
+
+		//step3: load jobs into soure machine. 1 job per order
+		for (size_t j = 0; j < om.size(); j++) {
+			machineList[sourceMachine].push(move(Job(om.getOrder(j))));
+		}
+
+		//step4: Time Loop
+		for (int time = 0;; time++) {
+			cout << "\n\nTIME LOOP TOP, time: " << time << endl;
+
+
+			bool finished = true;
+			for (size_t m = 0; m < machineList.size(); m++) {
+				if (!machineList[m].empty()) {
+					finished = false;
+					cout << "Machine Scan: " << machineList[m].getName() << " has jobs.\n";
+				}
+			}
+			if (finished) {
+				cout << "\n*******No Jobs Waiting for processing********\n";
+				cout << "********Factory Simulation Complete**********\n";
+				break;
+			}
+
+			//step5: Machine Loop
+			for (size_t m = 0; m < machineList.size(); m++) {
+				machineList[m].run(im, machineList);
+			}
+		}
+	}
+};
+
+
+int validate(ItemManager& im, OrderManager& om, TaskManager& tm) {
+	int errors = 0;
+
+	//taskList : checks if accept & reject tasks are available as task names in Task Class
+	errors += tm.validate();
+
+	//itemList : checks if installer & remover tasks are available as task names in Task Class
+	for (size_t i = 0; i < im.size(); i++) {
+		string s = im.getInstaller(i);
+		if (!tm.find(s)) {
+			cerr << "cannot find installer task: " << s << endl;
+			errors++;
+		}
+
+		s = im.getRemover(i);
+		if (!tm.find(s)) {
+			cerr << "cannot find remover task: " << s << endl;
+			errors++;
+		}
+	}
+
+	//orderList : checks if itemList vector are available as item name in Item Class
+	for (size_t o = 0; o < om.size(); o++) {                 //order index
+		for (size_t i = 0; i < om.itemListSize(o); i++) {    //item index
+			string s = om.getItem(o, i);
+			if (!im.find(s)) {
+				cerr << "Item: cannot find installer task: " << s << endl;
+				errors++;
+			}
+
+		}
+	}
+
+	if (errors)
+		cerr << "Not good, " << errors << " errors in data. Please fix and resubmit." << endl;
+	else
+		cout << "*************No errors found.**************" << endl;
+
+	return errors;
+}    //end validate function
+
+	 //main function
+int main(int argc, char* argv[]) {
+	if (argc != 5) {
+		cerr << " Usage : " << argv[0] << ":item-csv order-csc task-csv separator-char\n";
+		return 1;
+	}
+
+	string itemfile = argv[1];
+	string orderfile = argv[2];
+	string taskfile = argv[3];
+	char delimeter = argv[4][0];
+	cout << "file delimeter is " << "--> " << delimeter << " <--" << endl;
+
+	try {
+		string graphfile;
+		vector <vector<string>> itemcsv;
+		vector <vector<string>> ordercsv;
+		vector <vector<string>> taskcsv;
+
+		readcsv(itemfile, delimeter, itemcsv);
+		//printcsv(csvdata);
+		ItemManager im(itemcsv);
+		im.print();
+		im.graph(itemfile);
+		cout << endl;
+
+		readcsv(orderfile, delimeter, ordercsv);
+		//printcsv(csvdata);
+		OrderManager om(ordercsv);
+		om.print();
+		om.graph(orderfile);
+		cout << endl;
+
+		readcsv(taskfile, delimeter, taskcsv);
+		//printcsv(csvdata);
+		TaskManager tm(taskcsv);
+		tm.print();
+		tm.graph(taskfile);
+		cout << endl;
+
+		int errors = validate(im, om, tm);
+		cout << "****Validate returned " << errors << " syntax errors.*****\n\n";
+
+		Factory f(move(im), move(om), move(tm));
+
+		cout << "\n******************ALL DONE*******************\n\n";
+	}
+
+	catch (string& e) {
+		cerr << e << endl;
+	}
+}
+#pragma once
+#include <queue>
+#include "t.h"
+#include "job.h"
+#include "i.h"
+
+using namespace std;
+
+class Machine : public Task {
+	bool bInstaller;
+	bool bRemover;
+	bool bSink;
+	std::queue<Job> inputQ;
+	Job job;
+public:
+	Machine(Task& tt, ItemManager& im) :Task(tt), bInstaller(false), bRemover(false), bSink(false) {
+		classify(im);
+	}
+
+	void push(Job&& j) {
+		inputQ.push(move(j));
+	}
+
+	void print(std::ostream& os) {
+		os << "Machine Name is " << getName();
+		if (bInstaller) os << "<-- installer";
+		if (bRemover) os << "<-- remover";
+		if (bSink) os << "<-- SINK!";
+		if (!bInstaller && !bRemover) os << "<-- neither installer nor remover";
+		os << endl;
+
+	}
+
+	void classify(ItemManager& im) {
+		for (size_t i = 0; i < im.size(); i++) {
+			if (getName() == im.getInstaller(i)) bInstaller = true;
+			if (getName() == im.getRemover(i)) bRemover = true;
+		}
+		if (bInstaller && bRemover) {
+			throw getName() + "is both an installer and remover. Fix item data and resubmit.";
+		}
+
+	}
+
+	void run(ItemManager& im, std::vector<Machine>& machineList) {
+		if (inputQ.empty()) return;
+
+		job = move(inputQ.front());
+		inputQ.pop();
+
+		cout << "Job: ";
+		job.print();
+
+		if (bSink) {
+			if (job.isComplete()) {
+				cout << job.getProduct() << " completed for customer "
+					<< job.getCustomer() << endl;
+			}
+			else {
+				throw "Job at sink node " + getName() + " but job is not complete.";
+			}
+		}
+
+		auto route = [&machineList, this](Job& job, string destination) {
+			for (auto m = machineList.begin(); m < machineList.end(); m++) {
+				if (m->getName() == destination) {
+					m->push(move(job));
+					cout << "route moving job from " << this->getName()
+						<< " to " << destination << endl;
+					break;
+				}
+			}
+		};
+
+		bool didSomething = false;
+		if (bInstaller) {
+			for (size_t item = 0; item < job.size(); item++) {
+				if (job.isInstalled(item))
+					continue;
+				string itemName = job.item(item);
+				Item* itemPtr = im.find(itemName);
+				if (itemPtr && itemPtr->getInstaller() == getName()) {
+					job.install(item);
+					didSomething = true;
+				}
+				else {
+					cout << "item " << itemName << " needs installer "
+						<< itemPtr->getInstaller() << ", (not us)" << endl;
+				}
+			}
+		}
+
+		if (bRemover) {
+			for (size_t item = 0; item < job.size(); item++) {
+				if (!job.isInstalled(item))
+					continue;
+				string itemName = job.item(item);
+				Item* itemPtr = im.find(itemName);
+				if (itemPtr && itemPtr->getRemover() == getName()) {
+					job.remove(item);
+					didSomething = true;
+				}
+				else {
+					cout << "item " << itemName << " needs remover "
+						<< itemPtr->getRemover() << ", (not us)" << endl;
+				}
+			}
+		}
+
+		string accept = getAccept();
+		string reject = getReject();
+
+		if (!didSomething) {
+			route(job, accept);
+			return;
+		}
+
+		if (reject.empty()) {
+			route(job, accept);
+			return;
+		}
+
+		if (rand() % 2) {
+			cout << "Machine " << getName() << ": Coin flip job ***PASSED****" << endl;
+			route(job, accept);
+			return;
+		}
+		else {
+			cout << "Machine " << getName() << ": Coin flip job ***FAILED****" << endl;
+			route(job, reject);
+			return;
+		}
+	}
+	bool isSink() { return getAccept().empty() && getReject().empty(); }
+	bool empty() { return inputQ.empty(); }
+};
+
+#pragma once
+#include <iostream>
+#include "o.h"
+
+class Job : public Order {
+	std::vector<bool> installed;
+public:
+	Job() {}
+	Job(Order& oo) :Order(oo) {
+		for (size_t i = 0; i < size(); i++)
+			installed.push_back(false);
+	}
+
+	bool isComplete() {
+		for (auto e : installed)
+			if (!e) return false;
+		return true;
+	}
+
+	void install(int i) { installed[i] = true; }
+	void remove(int i) { installed[i] = false; }
+	bool isInstalled(int i) { return installed[i]; }
+};#include "util.h"
+#include "i.h"
+
+using namespace std;
+
+bool Item::validCode(string code) {
+	//if (!slots.size()) return 0;
+	bool result = false;
+	for (int i = 0; i < (int)code.size(); i++) {
+		if (code.size() && isdigit(code[i]))
+			result = true;
+	}
+	return result;
+}
+
+Item::Item(vector<string>field) {
+	switch (field.size()) {
+	case 5:
+		description = field[4];
+	case 4:
+		if (validCode(field[3])) {
+			code = field[3];
+		}
+		else {
+			throw string("expected a code , found a ") + field[3];
+		}
+
+		if (validTaskName(field[2]))
+			remover = field[2];
+		else
+			throw string("expected a remover, found a ") + field[2];
+
+		if (validTaskName(field[1]))
+			installer = field[1];
+		else
+			throw string("expected a installer, found a ") + field[1];
+
+		if (validItemName(field[0]))
+			itemName = field[0];
+		else
+			throw string("expected a name, found a ") + field[0];
+		break;
+
+	default:
+		throw string("expected 4 or 5 fields, found ") + to_string(field.size());
+	}
+}
+
+void Item::print() {
+	cout << "itemName, installer, remover, code, [description] = "
+		<< itemName << ","
+		<< installer << ","
+		<< remover << ","
+		<< code << ",";
+	if (!description.empty())
+		cout << description << ",";
+	cout << endl;
+}
+
+void Item::graph(ofstream& os) {
+	auto f = [&os](string symbol) {os << '"' << symbol << '"'; };
+	f("Item: " + itemName);
+	os << "->";
+	f(installer);
+	os << "[color=green];" << endl;
+	f("Item: " + itemName);
+	os << "->";
+	f(remover);
+	os << "[color=red];" << endl;
+}
+
+//*********class ItemManager************
+
+ItemManager::ItemManager(vector<vector<string> > & csvdata) {
+	int line = 0;
+	for (auto field : csvdata) {
+		try {
+			line++;
+			ItemList.push_back(Item(field));
+		}
+		catch (string& e) {
+			cerr << "Problem with line " << line << endl;
+			cerr << e << endl;
+		}
+	}
+}
+
+void ItemManager::print() {
+	for (auto t : ItemList) {
+		t.print();
+	}
+}
+
+void ItemManager::graph(string filename) {
+	ofstream of(filename + ".gv");         //save digrapgh file with .gv extension
+	if (of.is_open()) {
+		of << "digraph myGraph{\n";
+		for (auto t : ItemList) {
+			t.graph(of);
+		}
+		of << "}\n";
+		of.close();
+	}
+	string cmd = "dot -Tpng " + filename + ".gv > " + filename + ".gv.png";       // create a graphic file and save it to a new file with extension .gv.png
+	cout << cmd << '\n';
+	system(cmd.c_str());                  // system command expects a char*
+}
+
+Item* ItemManager::find(std::string nameKey) {
+	for (unsigned int i = 0; i < ItemList.size(); i++) {
+		if (ItemList[i].getName() == nameKey)
+			return &ItemList[i];
+	}
+	return nullptr;
+}
+#include "util.h"
+#include "o.h"
+
+using namespace std;
+
+//*************class Order****************
+Order::Order(vector<string>field) {
+	if (field.size() >= 3) {
+		if (validCustomerName(field[0]))
+			customer = field[0];
+		else
+			throw string("expected customer name, found a ") + field[0];
+
+		if (validProductName(field[1]))
+			product = field[1];
+		else
+			throw string("expected product name, found a ") + field[0];
+
+		for (int i = 2; i <(int)field.size(); i++) {
+			if (validItemName(field[i])) {
+				itemList.push_back(field[i]);
+			}
+			else
+				throw string("expected an item, found a ") + field[0];
+		}
+	}
+	else {
+		throw string("expected minimum 3 fields, found ") + to_string(field.size());
+	}
+}
+
+void Order::print() {
+	cout << "customer, product, itemList = "
+		<< customer << " | " << product << " | ";
+	for (int i = 0; i < (int)itemList.size(); i++) {
+		cout << itemList[i];
+		if (i + 1 < (int)itemList.size())
+			cout << " | ";
+	}
+	cout << endl;
+}
+
+void Order::graph(ofstream& os) {
+	auto f = [&os](string symbol) {os << '"' << symbol << '"'; };
+	for (int i = 0; i < (int)itemList.size(); i++) {
+		f(customer);
+		os << "->";
+		f(itemList[i]);
+		os << "[color=green];" << endl;
+	}
+}
+
+
+//*********class OrderManager************
+
+OrderManager::OrderManager(vector<vector<string> > & csvdata) {
+	int line = 0;
+	for (auto field : csvdata) {
+		try {
+			line++;
+			OrderList.push_back(Order(field));
+		}
+		catch (string& e) {
+			cerr << "Problem with line " << line << endl;
+			cerr << e << endl;
+		}
+	}
+}
+
+void OrderManager::print() {
+	for (auto t : OrderList) {
+		t.print();
+	}
+}
+
+void OrderManager::graph(string filename) {
+	ofstream of(filename + ".gv");         //save digrapgh file with .gv extension
+	if (of.is_open()) {
+		of << "digraph myGraph{\n";
+		for (auto t : OrderList) {
+			t.graph(of);
+		}
+		of << "}\n";
+		of.close();
+	}
+	string cmd = "dot -Tpng " + filename + ".gv > " + filename + ".gv.png";       // create a graphic file and save it to a new file with extension .gv.png
+	cout << cmd << '\n';
+	system(cmd.c_str());          // system command expects a char*
+}
+
+msmohiti@matrix:~/oop345/ms5> g++ -o factory -std="c++0x" factory.cpp i.cpp o.cpp util.cpp t.cpp
+msmohiti@matrix:~/oop345/ms5> factory FishTabkItem.dat FishTankCustomer.dat FishTankTask.dat ","
+file delimeter is --> , <--
+itemName, installer, remover, code, [description] = Tank,SetupTank,RemoveTank,100,Glass Tank to use,
+itemName, installer, remover, code, [description] = Gravel,AddGravel,RemoveGravel,200,Gravel for the bottom of the tank,
+itemName, installer, remover, code, [description] = Filter,AssembleFilter,DisassembleFilter,300,Cleaning filtration system,
+itemName, installer, remover, code, [description] = Lighting,InstallLighting,ReplaceLighting,400,Hood lighting system,
+itemName, installer, remover, code, [description] = Heater,AddHeater,RemoveHeater,500,Heater for maintaining water temperature,
+itemName, installer, remover, code, [description] = Water,AddWater,DrainWater,600,Clean water for the tank,
+itemName, installer, remover, code, [description] = Rocks,AddRocks,RemoveRocks,700,Live Reef Rocks,
+itemName, installer, remover, code, [description] = Fish,AddFish,CatchFish,800,Live fish to enjoy,
+itemName, installer, remover, code, [description] = Coral,AddCoral,RemoveCoral,900,Live coral to enjoy,
+itemName, installer, remover, code, [description] = Toys,AddToys,RemoveToys,1000,Artificial rocks and tank nicknacks,
+dot -Tpng FishTabkItem.dat.gv > FishTabkItem.dat.gv.png
+
+customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+dot -Tpng FishTankCustomer.dat.gv > FishTankCustomer.dat.gv.png
+
+name, slots, accept, reject = SetupTank,2,AddGravel,,
+name, slots, accept, reject = RemoveTank,1,SetupTank,,
+name, slots, accept, reject = AddGravel,5,AssembleFilter,RemoveGravel,
+name, slots, accept, reject = RemoveGravel,1,AddGravel,,
+name, slots, accept, reject = AssembleFilter,5,InstallLighting,DisassembleFilter,
+name, slots, accept, reject = DisassembleFilter,1,AssembleFilter,,
+name, slots, accept, reject = InstallLighting,2,AddHeater,ReplaceLighting,
+name, slots, accept, reject = ReplaceLighting,1,InstallLighting,,
+name, slots, accept, reject = AddHeater,5,AddWater,RemoveHeater,
+name, slots, accept, reject = RemoveHeater,1,AddHeater,,
+name, slots, accept, reject = AddWater,5,AddRocks,DrainWater,
+name, slots, accept, reject = DrainWater,1,AddWater,,
+name, slots, accept, reject = AddRocks,8,AddFish,RemoveRocks,
+name, slots, accept, reject = RemoveRocks,1,AddRocks,AddFish,
+name, slots, accept, reject = AddFish,10,AddCoral,CatchFish,
+name, slots, accept, reject = CatchFish,1,AddFish,AddCoral,
+name, slots, accept, reject = AddCoral,5,AddToys,RemoveCoral,
+name, slots, accept, reject = RemoveCoral,1,AddCoral,AddToys,
+name, slots, accept, reject = AddToys,4,,,
+name, slots, accept, reject = RemoveToys,1,,,
+dot -Tpng FishTankTask.dat.gv > FishTankTask.dat.gv.png
+
+*************No errors found.**************
+****Validate returned 0 syntax errors.*****
+
+Source found:RemoveTank
+Source Machine = 20: Machine Name is RemoveTank<-- remover
+
+
+TIME LOOP TOP, time: 0
+Machine Scan: RemoveTank has jobs.
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+route moving job from RemoveTank to SetupTank
+
+
+TIME LOOP TOP, time: 1
+Machine Scan: SetupTank has jobs.
+Machine Scan: RemoveTank has jobs.
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Gravel needs installer AddGravel, (not us)
+item Water needs installer AddWater, (not us)
+item Fish needs installer AddFish, (not us)
+route moving job from SetupTank to AddGravel
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+route moving job from RemoveTank to SetupTank
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Water needs installer AddWater, (not us)
+item Fish needs installer AddFish, (not us)
+Machine AddGravel: Coin flip job ***PASSED****
+route moving job from AddGravel to AssembleFilter
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Water needs installer AddWater, (not us)
+item Fish needs installer AddFish, (not us)
+route moving job from AssembleFilter to InstallLighting
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Water needs installer AddWater, (not us)
+item Fish needs installer AddFish, (not us)
+route moving job from InstallLighting to AddHeater
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Water needs installer AddWater, (not us)
+item Fish needs installer AddFish, (not us)
+route moving job from AddHeater to AddWater
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Fish needs installer AddFish, (not us)
+Machine AddWater: Coin flip job ***FAILED****
+route moving job from AddWater to DrainWater
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+route moving job from DrainWater to AddWater
+
+
+TIME LOOP TOP, time: 2
+Machine Scan: SetupTank has jobs.
+Machine Scan: RemoveTank has jobs.
+Machine Scan: AddWater has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Gravel needs installer AddGravel, (not us)
+item Water needs installer AddWater, (not us)
+item Heater needs installer AddHeater, (not us)
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+route moving job from SetupTank to AddGravel
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+route moving job from RemoveTank to SetupTank
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Water needs installer AddWater, (not us)
+item Heater needs installer AddHeater, (not us)
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+Machine AddGravel: Coin flip job ***PASSED****
+route moving job from AddGravel to AssembleFilter
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Water needs installer AddWater, (not us)
+item Heater needs installer AddHeater, (not us)
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+route moving job from AssembleFilter to InstallLighting
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Water needs installer AddWater, (not us)
+item Heater needs installer AddHeater, (not us)
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+route moving job from InstallLighting to AddHeater
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Water needs installer AddWater, (not us)
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+Machine AddHeater: Coin flip job ***PASSED****
+route moving job from AddHeater to AddWater
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Fish needs installer AddFish, (not us)
+Machine AddWater: Coin flip job ***PASSED****
+route moving job from AddWater to AddRocks
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+item Fish needs installer AddFish, (not us)
+route moving job from AddRocks to AddFish
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+Machine AddFish: Coin flip job ***PASSED****
+route moving job from AddFish to AddCoral
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+route moving job from AddCoral to AddToys
+Job: customer, product, itemList = Chloe Coleshill | Gold Fish Tank | Tank | Gravel | Water | Fish
+
+
+TIME LOOP TOP, time: 3
+Machine Scan: SetupTank has jobs.
+Machine Scan: AddWater has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Gravel needs installer AddGravel, (not us)
+item Water needs installer AddWater, (not us)
+item Lighting needs installer InstallLighting, (not us)
+item Heater needs installer AddHeater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+route moving job from SetupTank to AddGravel
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Water needs installer AddWater, (not us)
+item Lighting needs installer InstallLighting, (not us)
+item Heater needs installer AddHeater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddGravel: Coin flip job ***FAILED****
+route moving job from AddGravel to RemoveGravel
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+route moving job from RemoveGravel to AddGravel
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+Machine AddWater: Coin flip job ***FAILED****
+route moving job from AddWater to DrainWater
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Heater needs remover RemoveHeater, (not us)
+route moving job from DrainWater to AddWater
+
+
+TIME LOOP TOP, time: 4
+Machine Scan: AddGravel has jobs.
+Machine Scan: AddWater has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Water needs installer AddWater, (not us)
+item Lighting needs installer InstallLighting, (not us)
+item Heater needs installer AddHeater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddGravel: Coin flip job ***PASSED****
+route moving job from AddGravel to AssembleFilter
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Water needs installer AddWater, (not us)
+item Lighting needs installer InstallLighting, (not us)
+item Heater needs installer AddHeater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+route moving job from AssembleFilter to InstallLighting
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Water needs installer AddWater, (not us)
+item Heater needs installer AddHeater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine InstallLighting: Coin flip job ***PASSED****
+route moving job from InstallLighting to AddHeater
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Water needs installer AddWater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddHeater: Coin flip job ***FAILED****
+route moving job from AddHeater to RemoveHeater
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+route moving job from RemoveHeater to AddHeater
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+Machine AddWater: Coin flip job ***PASSED****
+route moving job from AddWater to AddRocks
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+route moving job from AddRocks to AddFish
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Toys needs installer AddToys, (not us)
+Machine AddFish: Coin flip job ***FAILED****
+route moving job from AddFish to CatchFish
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Water needs remover DrainWater, (not us)
+item Heater needs remover RemoveHeater, (not us)
+Machine CatchFish: Coin flip job ***PASSED****
+route moving job from CatchFish to AddFish
+
+
+TIME LOOP TOP, time: 5
+Machine Scan: AddHeater has jobs.
+Machine Scan: AddFish has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Water needs installer AddWater, (not us)
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddHeater: Coin flip job ***PASSED****
+route moving job from AddHeater to AddWater
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddWater: Coin flip job ***FAILED****
+route moving job from AddWater to DrainWater
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+item Heater needs remover RemoveHeater, (not us)
+route moving job from DrainWater to AddWater
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Toys needs installer AddToys, (not us)
+Machine AddFish: Coin flip job ***FAILED****
+route moving job from AddFish to CatchFish
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Water needs remover DrainWater, (not us)
+item Heater needs remover RemoveHeater, (not us)
+Machine CatchFish: Coin flip job ***FAILED****
+route moving job from CatchFish to AddCoral
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Fish needs installer AddFish, (not us)
+item Toys needs installer AddToys, (not us)
+route moving job from AddCoral to AddToys
+Job: customer, product, itemList = Elliott Coleshill | Tropical Tank | Tank | Gravel | Water | Heater | Fish | Toys
+item Fish needs installer AddFish, (not us)
+
+
+TIME LOOP TOP, time: 6
+Machine Scan: AddWater has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddWater: Coin flip job ***FAILED****
+route moving job from AddWater to DrainWater
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+item Heater needs remover RemoveHeater, (not us)
+route moving job from DrainWater to AddWater
+
+
+TIME LOOP TOP, time: 7
+Machine Scan: AddWater has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddWater: Coin flip job ***FAILED****
+route moving job from AddWater to DrainWater
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+item Heater needs remover RemoveHeater, (not us)
+route moving job from DrainWater to AddWater
+
+
+TIME LOOP TOP, time: 8
+Machine Scan: AddWater has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Rocks needs installer AddRocks, (not us)
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddWater: Coin flip job ***PASSED****
+route moving job from AddWater to AddRocks
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddRocks: Coin flip job ***FAILED****
+route moving job from AddRocks to RemoveRocks
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Water needs remover DrainWater, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+item Heater needs remover RemoveHeater, (not us)
+Machine RemoveRocks: Coin flip job ***PASSED****
+route moving job from RemoveRocks to AddRocks
+
+
+TIME LOOP TOP, time: 9
+Machine Scan: AddRocks has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Fish needs installer AddFish, (not us)
+item Coral needs installer AddCoral, (not us)
+Machine AddRocks: Coin flip job ***PASSED****
+route moving job from AddRocks to AddFish
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Coral needs installer AddCoral, (not us)
+Machine AddFish: Coin flip job ***FAILED****
+route moving job from AddFish to CatchFish
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Water needs remover DrainWater, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+item Heater needs remover RemoveHeater, (not us)
+item Rocks needs remover RemoveRocks, (not us)
+Machine CatchFish: Coin flip job ***FAILED****
+route moving job from CatchFish to AddCoral
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Fish needs installer AddFish, (not us)
+Machine AddCoral: Coin flip job ***FAILED****
+route moving job from AddCoral to RemoveCoral
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Tank needs remover RemoveTank, (not us)
+item Gravel needs remover RemoveGravel, (not us)
+item Water needs remover DrainWater, (not us)
+item Lighting needs remover ReplaceLighting, (not us)
+item Heater needs remover RemoveHeater, (not us)
+item Rocks needs remover RemoveRocks, (not us)
+Machine RemoveCoral: Coin flip job ***PASSED****
+route moving job from RemoveCoral to AddCoral
+
+
+TIME LOOP TOP, time: 10
+Machine Scan: AddCoral has jobs.
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Fish needs installer AddFish, (not us)
+Machine AddCoral: Coin flip job ***PASSED****
+route moving job from AddCoral to AddToys
+Job: customer, product, itemList = Elliott Coleshill | Marine Tank | Tank | Gravel | Water | Lighting | Heater | Rocks | Fish | Coral
+item Fish needs installer AddFish, (not us)
+
+
+TIME LOOP TOP, time: 11
+
+*******No Jobs Waiting for processing********
+********Factory Simulation Complete**********
+
+******************ALL DONE*******************
+
+msmohiti@matrix:~/oop345/ms5> exit
+exit
+
+Script done on Sat 15 Apr 2017 11:38:59 PM EDT

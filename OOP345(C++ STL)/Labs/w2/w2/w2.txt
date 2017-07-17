@@ -1,0 +1,243 @@
+Script started on Wed 25 Jan 2017 05:57:02 PM EST
+msmohiti@matrix:~/OOP345/w2/w2> whoami
+msmohiti
+msmohiti@matrix:~/OOP345/w2/w2> cat Station.h Station.cpp Stations.h Stations.cp p[K[Amsmohiti@matrix:~/OOP345/w2/w2> cat Station.h Station.cpp Stations.h Stations.cpp [K[Amsmohiti@matrix:~/OOP345/w2/w2> cat Station.h Station.cpp Stations.h Stations.cpp[Kmsmohiti@matrix:~/OOP345/w2/w2> cat Station.h Station.cpp Stations.h Stations.cpp[Kmsmohiti@matrix:~/OOP345/w2/w2> cat Station.h Station.cpp Stations.h Stations.cpp[Kmsmohiti@matrix:~/OOP345/w2/w2> cat Station.h Station.cpp Stations.h Stations.cpp
+// Author: M.Saeed Mohiti
+///////////////////////////////
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS
+#ifndef _STATION_H
+#define _STATION_H
+
+#ifndef nullptr
+#define nullptr 0
+#endif
+
+namespace w2
+{
+	enum PassType {
+		STUDENT_PASS = 0, ADULT_PASS, MAX_PASSTYPE
+	};
+
+	class Station {
+		std::string _name;
+		unsigned int _passes[MAX_PASSTYPE];
+
+	public:
+
+		Station();
+		void set(const std::string&, unsigned, unsigned);
+		void update(PassType, int);
+		unsigned inStock(PassType) const;
+		const std::string& getName() const;
+	};
+}
+
+#endif // _STATION_H
+// Author: M.Saeed Mohiti
+///////////////////////////////
+
+#include <iostream>
+#include "Station.h"
+
+namespace w2 {
+
+	Station::Station() : _name("") {
+		_passes[STUDENT_PASS] = 0;
+		_passes[ADULT_PASS] = 0;
+	}
+
+	void Station::set(const std::string& name, unsigned studentPass, unsigned adultPass) {
+		_name = name;
+		_passes[STUDENT_PASS] = studentPass;
+		_passes[ADULT_PASS] = adultPass;
+	}
+
+	unsigned Station::inStock(PassType type) const {
+		return _passes[type];
+	}
+
+	const std::string& Station::getName() const {
+		return _name;
+	}
+
+	void Station::update(PassType type, int num) {
+		_passes[type] += num;
+	}
+}// Author: M.Saeed Mohiti
+///////////////////////////////
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS
+#ifndef _STATIONS_H
+#define _STATIONS_H
+
+#include <string>
+#include "Station.h"
+
+namespace w2 {
+
+	class Stations {
+
+		Station* _stations;
+		int _numStation;
+
+	public:
+		Stations(const char* filename);
+		virtual ~Stations();
+
+		void update() const;
+		void restock() const;
+		void report() const;
+	};
+}
+
+#endif // _STATIONS_H// Author: M.Saeed Mohiti
+///////////////////////////////
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include "Stations.h"
+
+using namespace std;
+
+namespace w2 {
+
+	Stations::Stations(const char* filename) : _numStation(0), _stations(nullptr) {
+
+		ifstream fs(filename);
+
+		if (!fs.is_open()) {
+			cerr << "\nFile is not open" << std::endl;
+		}
+
+		char c;
+		fs >> _numStation;
+		fs.ignore(2000, '\n');
+		_stations = new Station[_numStation];
+
+		for (int i = 0; i < _numStation; i++) {
+
+			string name;
+			int numStudent, numAdult;
+			getline(fs, name, ';');
+			fs >> numStudent;
+			fs >> numAdult;
+			_stations[i].set(name, numStudent, numAdult);
+		}
+
+		fs.close();
+	}
+
+	Stations::~Stations() {
+		delete[] _stations;
+	}
+
+	void Stations::restock() const {
+
+		cout << endl;
+		cout << "Passes Added :\n";
+		cout << "-------------\n";
+
+		for (int i = 0; i < _numStation; i++) {
+
+			int numStudent, numAdult;
+
+			cout << _stations[i].getName() << endl << " Student Passes added : ";
+			cin >> numStudent;
+
+			cout << " Adult   Passes added : ";
+			cin >> numAdult;
+
+			_stations[i].update(STUDENT_PASS, numStudent);
+			_stations[i].update(ADULT_PASS, numAdult);
+		}
+	}
+
+	void Stations::update() const {
+
+		cout << "Passes Sold :\n";
+		cout << "-------------\n";
+
+		for (int i = 0; i < _numStation; i++) {
+
+			int numStudent, numAdult;
+
+			cout << _stations[i].getName() << endl;
+			cout << " Student Passes sold : ";
+			cin >> numStudent;
+			cout << " Adult   Passes sold : ";
+			cin >> numAdult;
+
+			_stations[i].update(STUDENT_PASS, -numStudent);
+			_stations[i].update(ADULT_PASS, -numAdult);
+		}
+
+	}
+
+	void Stations::report() const {
+
+		cout << endl;
+		cout << "Passes in Stock : Student Adult\n";
+		cout << "-------------------------------\n";
+
+		for (int i = 0; i < _numStation; i++) {
+			cout << setw(19) << left << _stations[i].getName(); // 19
+			cout << setw(6) << right << _stations[i].inStock(STUDENT_PASS);
+			cout << setw(6) << right << _stations[i].inStock(ADULT_PASS);
+			cout << endl;
+		}
+	}
+} // namespace w2msmohiti@matrix:~/OOP345/w2/w2> g++ -o w2 w2.cpp Station.cpp Stations.cpp
+msmohiti@matrix:~/OOP345/w2/w2> w2 Stations.dat
+
+Command Line : w2 Stations.dat 
+Passes Sold :
+-------------
+Spadina
+ Student Passes sold : 5
+ Adult   Passes sold : 8
+
+Bathurst
+ Student Passes sold : 34
+ Adult   Passes sold : 52
+
+Keele
+ Student Passes sold : 21
+ Adult   Passes sold : 13
+
+Bay
+ Student Passes sold : 67
+ Adult   Passes sold : 65
+
+Passes Added :
+-------------
+Spadina
+ Student Passes added : 29
+ Adult   Passes added : 52
+
+Bathurst
+ Student Passes added : 113
+ Adult   Passes added : 61
+
+Keele
+ Student Passes added : 51
+ Adult   Passes added : 52
+
+Bay
+ Student Passes added : 109
+ Adult   Passes added : 107
+
+Passes in Stock : Student Adult
+-------------------------------
+Spadina               100   200
+
+Bathurst            200   300
+
+Keele               100   100
+
+Bay                 200   200
+msmohiti@matrix:~/OOP345/w2/w2> exit
+exit
+
+Script done on Wed 25 Jan 2017 05:59:48 PM EST

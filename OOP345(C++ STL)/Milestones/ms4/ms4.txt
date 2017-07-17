@@ -1,0 +1,910 @@
+Script started on Sat 14 Apr 2017 10:02:18 AM EDT
+msmohiti@matrix:~/oop345/ms4> whoami
+msmohiti
+msmohiti@matrix:~/oop345/ms4> cat t.h t.cpp t-test.cpp i.h i.cpp i-test.cpp o.h o.cpp o-test.cpp util.cpp
+#pragma once
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+class Task {
+	std::string taskName, taskSlots, taskPass, taskFail;
+public:
+	Task(std::vector<std::string> row);
+	void Print();
+	void Graph(std::fstream& os);
+	std::string& getTaskName() { return taskName; }
+	std::string& getTaskPass() { return taskPass; }
+	std::string& getTaskFail() { return taskFail; }
+};
+
+class TaskManager {
+	std::vector< Task > taskList;
+public:
+	TaskManager(std::vector <std::vector <std::string> > & csvData);
+	void Print();
+	void Graph(std::string& filename);
+	Task* FindTask(std::string& name);
+	void IntegrityCheck();
+};#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+#include "t.h"
+
+Task::Task(std::vector<std::string> row) : taskSlots("1")
+{
+	switch (row.size()) {
+	case 4:
+		if (validTaskName(row[3]))
+			taskFail = row[3];
+		else
+			throw std::string("expected fail task name, found [") + row[3] + "]";
+	case 3:
+		if (validTaskName(row[2]))
+			taskPass = row[2];
+		else
+			throw std::string("expected fail task name, found [") + row[2] + "]";
+	case 2:
+		if (validSlotName(row[1]))
+			taskSlots = row[1];
+		else
+			throw std::string("expected fail task name, found [") + row[2] + "]";
+	case 1:
+		if (validTaskName(row[0]))
+			taskName = row[0];
+		else
+			throw std::string("expected fail task name, found [") + row[0] + "]";
+		break;
+	default:
+		throw std::string("expected 1,2,3 or 4 fields, found - ") + to_string(row.size());
+	}
+}
+
+void Task::Print() {
+	cout << "[" << taskName << "] "
+		<< "[" << taskSlots << "] "
+		<< "[" << taskPass << "] "
+		<< "[" << taskFail << "]\n";
+}
+
+void Task::Graph(fstream& os)
+{
+	if (!taskFail.empty())
+		os << '"' << taskName << '"'
+		<< "->"
+		<< '"' << taskFail << '"'
+		<< "[color=red];\n";
+	if (!taskPass.empty())
+		os << '"' << taskName << '"'
+		<< "->" << '"' << taskPass << '"'
+		<< "[color=green];\n";
+	if (taskFail.empty() && taskPass.empty())
+		os << '"' << taskName << '"'
+		<< ";\n";
+}
+
+TaskManager::TaskManager(std::vector < std::vector< std::string> > & csvData)
+{
+	int lineNumber = 0;
+	for (auto row : csvData) {
+		try {
+			lineNumber++;
+			taskList.push_back(move(Task(row)));
+		}
+		catch (std::string& e) {
+			cerr << "Problem with line " << lineNumber << ": " << e << "\n";
+		}
+	}
+}
+
+void TaskManager::Print()
+{
+	int lineNumber = 0;
+	for (auto t : taskList) {
+		lineNumber++;
+		cout << lineNumber << ": ";
+		t.Print();
+	}
+}
+
+void TaskManager::Graph(std::string& filename)
+{
+	string dotFile = filename + ".gv";
+	std::fstream os(dotFile, std::ios::out | std::ios::trunc);
+	if (!os.is_open()) {
+		cerr << "TaskManager::graph -> Cannot create " << dotFile << "\n";
+		cerr << "filename='" << filename << "'\n";
+		return;
+	}
+		os << "digraph taskgraph {\n";
+		for (auto t : taskList) {
+			t.Graph(os);
+		}
+		os << "}\n";
+		os.close();
+#ifdef __unix
+		string dot = "dot";
+#else
+		string dot = "C:/\"Program Files (x86)\"/Graphviz2.38/bin/dot.exe";
+#endif
+		string cmd = dot + " -Tpng " + filename + ".gv >" + filename + ".gv.png";
+		cout << cmd << "\n";
+
+		system(cmd.c_str());
+}
+Task* TaskManager::FindTask(std::string& name)
+{
+	for (size_t t = 0; t < taskList.size(); t++) {
+		if (taskList[t].getTaskName() == name)
+			return &taskList[t];
+	}
+	return nullptr;
+}
+
+void TaskManager::IntegrityCheck()
+{
+	for (auto t : taskList) {
+		if (!t.getTaskPass().empty() && FindTask(t.getTaskPass()) == nullptr) {
+			throw std::string("Task '") + t.getTaskName() + "' references Pass task '" + t.getTaskPass() + "' but it does not exist!";
+		}
+		if (!t.getTaskFail().empty() && FindTask(t.getTaskFail()) == nullptr) {
+			throw std::string("Task '") + t.getTaskName() + "' references Fail task '" + t.getTaskFail() + "' but it does not exist!";
+		}
+
+	}
+}#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+// put '|' for pipe symbol
+
+#include "t.h"
+using namespace std;
+
+
+int main(int argc, char* argv[]) {
+	try {
+		if (argc != 3)
+			throw string("usage:") + argv[0] + "file.csv delimeter-char";
+		string filename = argv[1]; //1st arg
+		char delim = argv[2][0]; //1st char of second arg
+
+		vector< vector <string> > csvTaskData;
+		csvRead(filename, delim, csvTaskData);
+
+		csvPrint(csvTaskData);
+
+		TaskManager tm(csvTaskData);
+		tm.Print();
+		tm.Graph(filename);
+	}
+	catch (string& e) {
+		cerr << e << "\n";
+	}
+
+	return 0;
+}#pragma once
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+#include "t.h"
+
+
+///code missing
+
+class Item {
+	string itemDescription, itemSequence, itemRemoverTask, itemName, itemInstallerTask;
+public:
+	Item(vector<string>);
+	void Print();
+	void Graph(fstream&);
+	std::string& getItemName() { return itemName; }
+	std::string& getItemRemoverTask() { return itemRemoverTask; }
+	std::string& getItemInstallerTask() { return itemInstallerTask; }
+};
+
+//code missing
+
+class ItemManager {
+	vector< Item > itemList;
+public:
+	ItemManager(vector <vector <string> >& csvData);
+	void Print();
+	void Graph(string& filename);
+	Item* FindItem(std::string& name);
+	void IntegrityCheck(TaskManager& tm);
+};#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+using namespace std;
+
+#include "i.h"
+
+Item* ItemManager::FindItem(std::string& name) {
+	for (size_t i = 0; itemList.size(); i++) {
+		if (itemList[i].getItemName() == name)
+			return &itemList[i];
+	}
+	return nullptr;
+}
+
+Item::Item(vector<string> row)
+{
+	switch (row.size()) {
+	case 5:
+		itemDescription = row[4];
+	case 4:
+		if (validItemSequence(row[3]))
+			itemSequence = row[3];
+		else
+			throw string("expected sequence, found [") + row[3] + "]";
+		//case 3:
+		if (validTaskName(row[2]))
+			itemRemoverTask = row[2];
+		else
+			throw string("expected fail item name, found [") + row[2] + "]";
+		//case 2:
+		if (validTaskName(row[1]))
+			itemInstallerTask = row[1];
+		else
+			throw string("expected fail item name, found [") + row[1] + "]";
+		//case 1:
+		if (validItemName(row[0]))
+			itemName = row[0];
+		else
+			throw string("expected fail item name, found [") + row[0] + "]";
+		break;
+	default:
+		throw string("expected 4 or 5 fields, found -") + to_string(row.size());
+	}
+}
+
+void Item::Print()
+{
+	cout << "[" << itemName << "]"
+		<< "[" << itemInstallerTask << "]"
+		<< "[" << itemRemoverTask << "]"
+		<< "[" << itemSequence << "]"
+		<< "[" << itemDescription << "]\n";
+}
+
+void Item::Graph(fstream& os)
+{
+	os << '"' << "Item\n" << itemName << '"'
+		<< "->"
+		<< '"' << "Installer\n" << itemInstallerTask << '"'
+		<< "[color=green];\n";
+
+	os << '"' << "Item\n" << itemName << '"'
+		<< "->" << '"' << "Remover\n" << itemRemoverTask << '"'
+		<< "[color=red];\n";
+}
+
+ItemManager::ItemManager(vector < vector<string > > & csvData) {
+	int lineNumber = 0;
+	for (auto row : csvData) {
+		try {
+			lineNumber++;
+			itemList.push_back(move(Item(row)));
+		}
+		catch (string& e) {
+			cerr << "Problem with line " << lineNumber << "; " << e << "\n";
+		}
+	}
+}
+
+void ItemManager::Print() {
+	int lineNumber = 0;
+	for (auto t : itemList) {
+		lineNumber++;
+		cout << lineNumber << ": ";
+		t.Print();
+	}
+}
+
+void ItemManager::Graph(string& filename)
+{
+	string dotFile = filename + ".gv";
+	std::fstream os(dotFile, std::ios::out | std::ios::trunc);
+	if (!os.is_open()) {
+		cerr << "TaskManager::graph -> Cannot create " << dotFile << "\n";
+		cerr << "filename='" << filename << "'\n";
+		return;
+	}
+
+		os << "digraph itemgraph {\n";
+		for (auto t : itemList) {
+			t.Graph(os);
+		}
+		os << "}\n";
+		os.close();
+#ifdef __unix
+		string dot = "dot";
+#else
+		string dot = "C:/\"Program Files (x86)\"/Graphviz2.38/bin/dot.exe";
+#endif
+		string cmd = dot + " -Tpng " + filename + ".gv >" + filename + ".gv.png";
+		cout << cmd << "\n";
+
+		system(cmd.c_str());
+}
+
+
+void ItemManager::IntegrityCheck(TaskManager& tm) {
+	for (auto i : itemList) {
+		if (tm.FindTask(i.getItemInstallerTask()) == nullptr) {
+			throw std::string("Item '") + i.getItemName() + "' references installer task '" + i.getItemInstallerTask() + "' but it does not exist!";
+		}
+
+		if (tm.FindTask(i.getItemRemoverTask()) == nullptr) {
+			throw std::string("Item ") + i.getItemName() + "references remover task " + i.getItemRemoverTask() + " but it does not exist!";
+		}
+
+	}
+}#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+using namespace std;
+
+#include "i.h"
+
+int main(int argc, char* argv[])
+{
+	try {
+		if (argc != 3) {
+			throw string("Usage ") + argv[0] + string(": filename delimiter-char");
+		}
+
+		string filename = string(argv[1]);
+		char delimiter = argv[2][0];
+
+		vector <vector<string > > csvItemData;
+		csvRead(filename, delimiter, csvItemData);
+
+		ItemManager im(csvItemData);
+		im.Print();
+		im.Graph(filename);
+
+	}
+	catch (const string& e) {
+		cerr << e << "\n";
+	}
+}#pragma once
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+using namespace std;
+
+#include "i.h"
+
+class Order {
+	string orderCustomerName, orderProductName;
+	vector<string> itemList;
+public:
+	Order(vector<string> row);
+	void Print();
+	void Graph(fstream&);
+	string& getCustomer() { return orderCustomerName; }
+	string& getProduct() { return orderProductName; }
+	size_t size() { return itemList.size(); }
+	string& getItem(size_t i) { return itemList[i]; }
+};
+
+class OrderManager {
+	vector< Order > orderList;
+public:
+	OrderManager(vector < vector<string > >& csvData);
+	void Print();
+	void Graph(string& filename);
+	void IntegrityCheck(ItemManager& im);
+};#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+using namespace std;
+
+#include "o.h"
+
+Order::Order(vector<string> row)
+{
+	if (row.size() < 3) {
+		throw string("need at least 3 fields, found") + to_string(row.size());
+	}
+
+	if (validOrderCustomerName(row[0]))
+		orderCustomerName = row[0];
+	else
+		throw string("expected customer name, found [") + row[0] + "]";
+
+	if (validOrderProductName(row[1]))
+		orderProductName = row[1];
+	else
+		throw string("expected product name, found [") + row[1] + "]";
+
+	for (size_t i = 2; i < row.size(); i++)
+		if (validItemName(row[i]))
+			itemList.push_back(row[i]);
+		else
+			throw string("expected item name, found [") + row[i] + "]";
+}
+
+void Order::Print()
+{
+	cout << "[" << orderCustomerName << "]"
+		<< "[" << orderProductName << "]";
+	for (auto e : itemList)
+		cout << "[" << e << "]";
+	cout << "\n";
+}
+
+void Order::Graph(fstream& os)
+{
+	for (auto e : itemList)
+		os << '"' << orderCustomerName << "\n" << orderProductName << '"'
+		<< "->"
+		<< '"' << e << '"'
+		<< "[color=blue];\n";
+}
+
+OrderManager::OrderManager(vector <vector< string> >& csvData)
+{
+	int lineNumber = 0;
+	for (auto row : csvData) {
+		try {
+			lineNumber++;
+			orderList.push_back(move(Order(row)));
+		}
+		catch (string& e) {
+			cerr << "Problem with line " << lineNumber << ": " << e << "\n";
+		}
+	}
+}
+
+void OrderManager::Print() {
+	int lineNumber = 0;
+	for (auto t : orderList) {
+		lineNumber++;
+		cout << lineNumber << ": ";
+		t.Print();
+	}
+}
+
+void OrderManager::Graph(string& filename)
+{
+	string dotFile = filename + ".gv";
+	std::fstream os(dotFile, std::ios::out | std::ios::trunc);
+	if (!os.is_open()) {
+		cerr << "TaskManager::graph -> Cannot create " << dotFile << "\n";
+		cerr << "filename='" << filename << "'\n";
+		return;
+	}
+		os << "digraph ordergraph {\n";
+		for (auto t : orderList) {
+			t.Graph(os);
+		}
+
+		os << "}\n";
+		os.close();
+#ifdef __unix
+		string dot = "dot";
+#else
+		string dot = "C:/\"Program Files (x86)\"/Graphviz2.38/bin/dot.exe";
+#endif
+		string cmd = dot + " -Tpng " + filename + ".gv >" + filename + ".gv.png";
+		cout << cmd << "\n";
+
+		system(cmd.c_str());
+	}
+void OrderManager::IntegrityCheck(ItemManager& im) {
+	for (auto o : orderList) {// for each order
+		for (size_t count = 0; count < o.size(); count++) { // for each item in that order
+			if (im.FindItem(o.getItem(count)) == nullptr) { // throw if not found
+				throw std::string("Order  ") + o.getCustomer() + "references remover task" + o.getItem(count) + "but it does not excist!";
+			}
+		}
+	}
+}
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+using namespace std;
+
+#include "o.h"
+
+int main(int argc, char*argv[])
+{
+	try {
+		if (argc != 3) {
+			throw string("Usage ") + argv[0] + string(": filename delimiter-char");
+		}
+
+		string filename = string(argv[1]);
+		char delimiter = argv[2][0];
+
+		vector < vector<string > > csvOrderData;
+		csvRead(filename, delimiter, csvOrderData);
+
+		OrderManager tm(csvOrderData);
+		tm.Print();
+		tm.Graph(filename);
+
+	}
+	catch (const string& e) {
+		cerr << e << "\n";
+	}
+}#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "util.h"
+
+// put '|' for pipe symbol
+
+using namespace std;
+
+bool validTaskName(string& t)
+{
+	if (t.empty()) {
+		return false;
+	}
+
+	for (auto c : t) {
+		if (!(isalnum(c) || c == ' ' || c == '_')) { // if letter not (alphanumeric), space or underscore
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool validSlotName(string& t)
+{
+	if (t.empty()) {
+		return false;
+	}
+
+	for (auto c : t) {
+		if (!(isalnum(c))) { // if not number
+			return false;
+		}
+	}
+	return true;
+}
+
+bool validItemName(string& t) {
+	if (t.empty()) {
+		return false;
+	}
+
+	for (auto c : t) {
+		if (!(isalnum(c) || c == ' ' || c == '_')) { // if letter not (alphanumeric), space or underscore
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool validOrderCustomerName(string& t) {
+	if (t.empty()) {
+		return false;
+	}
+
+	for (auto c : t) {
+		if (!(isalnum(c) || c == ' ' || c == '_')) { // if letter not (alphanumeric), space or underscore
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool validOrderProductName(string& t) {
+
+	if (t.empty()) {
+		return false;
+	}
+
+	for (auto c : t) {
+		if (!(isalnum(c) || c == ' ' || c == '_')) { // if letter not (alphanumeric), space or underscore
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool validItemSequence(string& t) {
+
+	if (t.empty()) return false;
+
+	for (auto c : t) {
+		if (!isdigit(c))
+			return false;
+	}
+
+	return true;
+}
+
+
+
+void Trim(string& f) {
+	while (!f.empty() && f[0] == ' ') { //delete leading space
+		f.erase(0, 1);
+	}
+
+	while (!f.empty() && f[f.size() - 1] == ' ') // delete trailing spaces
+		f.erase((f.size() - 1), 1);
+}
+
+void csvPrint(vector < vector<string> > & csvData) {
+	cout << "number of lines = " << csvData.size() << "\n";
+
+	// print using indexes
+	for (size_t row = 0; row < csvData.size(); row++) {
+		cout << "row =" << row << " ";
+		for (size_t column = 0; column < csvData[row].size(); column++) {
+			cout << "'" << csvData[row][column] << "' ";
+			//cout << "\n";
+		}
+		cout << "\n";
+	}
+
+	// print using iterators
+	for (auto rowIt = csvData.begin(); rowIt != csvData.end(); rowIt++) {
+		for (auto columnIt = rowIt->begin(); columnIt != rowIt->end(); columnIt++) {
+			cout << "'" << *columnIt << "\n";
+		}
+		cout << "\n";
+	}
+
+	// print using range-based for    //ON THE EXAM
+	for (auto row : csvData) {
+		for (auto column : row) {
+			cout << "'" << column << "'";
+			//cout << "\n";
+		}
+		cout << "\n";
+	}
+}
+
+void csvRead(string& filename, char delim, vector<vector<string> >& csvData) {
+	fstream is(filename, ios::in);
+
+	if (!is.is_open())
+		throw string("cannot open file") + filename;
+
+	string line;
+	while (getline(is, line)) {
+		auto cr = line.find('\r');
+		if (cr != string::npos)
+			line.erase(cr);
+
+		//	cout << "line ==>" << line << "<==\n";
+		vector <string> fields;
+		string field;
+		size_t i = 0;
+
+		while (i < line.size()) {
+			if (line[i] != delim) {
+				field += line[i];
+			}
+			else { // found delimeter
+				Trim(field);
+				fields.push_back(move(field)); // add field to our lost of fields
+											   //field.clear();
+			}
+			i++;
+		} // end of processing line
+		if (!field.empty()) {
+			Trim(field);
+			fields.push_back(move(field));
+			//add line fields to csvData
+			csvData.push_back(move(fields));
+			fields.clear();
+		}
+	}
+
+	is.close();
+}msmohiti@matrix:~/oop345/ms4> g++ -o t -std=c++0x t.cpp i.cpp util.cpp t-test.cpp 
+msmohiti@matrix:~/oop345/ms4> t TaskList.dat "|"
+number of lines = 13
+row =0 'Power Supply' '4' 'Motherboard' 
+row =1 'Motherboard' '3' 'CPU' 'Remove CPU' 
+row =2 'Remove CPU' '1' 'CPU' 
+row =3 'CPU' '5' 'Memory' 'Remove CPU' 
+row =4 'Remove CPU' '1' 'CPU' 
+row =5 'Memory' '4' 'SSD' 'Remove Memory' 
+row =6 'Remove Memory' '1' 'Memory' 
+row =7 'SSD' '4' 'GPU' 'Remove SSD' 
+row =8 'Remove SSD' '1' 'SSD' 
+row =9 'GPU' '3' 'Test' 
+row =10 'Test' '4' 'Approve' 'Repair' 
+row =11 'Repair' 
+row =12 'Approve' 
+'Power Supply
+'4
+'Motherboard
+
+'Motherboard
+'3
+'CPU
+'Remove CPU
+
+'Remove CPU
+'1
+'CPU
+
+'CPU
+'5
+'Memory
+'Remove CPU
+
+'Remove CPU
+'1
+'CPU
+
+'Memory
+'4
+'SSD
+'Remove Memory
+
+'Remove Memory
+'1
+'Memory
+
+'SSD
+'4
+'GPU
+'Remove SSD
+
+'Remove SSD
+'1
+'SSD
+
+'GPU
+'3
+'Test
+
+'Test
+'4
+'Approve
+'Repair
+
+'Repair
+
+'Approve
+
+'Power Supply''4''Motherboard'
+'Motherboard''3''CPU''Remove CPU'
+'Remove CPU''1''CPU'
+'CPU''5''Memory''Remove CPU'
+'Remove CPU''1''CPU'
+'Memory''4''SSD''Remove Memory'
+'Remove Memory''1''Memory'
+'SSD''4''GPU''Remove SSD'
+'Remove SSD''1''SSD'
+'GPU''3''Test'
+'Test''4''Approve''Repair'
+'Repair'
+'Approve'
+1: [Power Supply] [4] [Motherboard] []
+2: [Motherboard] [3] [CPU] [Remove CPU]
+3: [Remove CPU] [1] [CPU] []
+4: [CPU] [5] [Memory] [Remove CPU]
+5: [Remove CPU] [1] [CPU] []
+6: [Memory] [4] [SSD] [Remove Memory]
+7: [Remove Memory] [1] [Memory] []
+8: [SSD] [4] [GPU] [Remove SSD]
+9: [Remove SSD] [1] [SSD] []
+10: [GPU] [3] [Test] []
+11: [Test] [4] [Approve] [Repair]
+12: [Repair] [1] [] []
+13: [Approve] [1] [] []
+dot -Tpng TaskList.dat.gv >TaskList.dat.gv.png
+msmohiti@matrix:~/oop345/ms4> g++ -o t -std=c++0x t.cpp i.cpp util.cpp i-test.cpp
+msmohiti@matrix:~/oop345/ms4> t ItemList.dat "|"
+itemName, installer, remover, code, [description] = CPU,CPU,Remove CPU,300,Central Processing Unit,
+itemName, installer, remover, code, [description] = Memory,Memory,Remove Memory,400,Samsung Memory Stick,
+itemName, installer, remover, code, [description] = GPU,GPU,Remove GPU,500,Nvidia Geforce 750M,
+itemName, installer, remover, code, [description] = Power Supply,Power Supply,Remove Power Supply,100,
+dot -Tpng ItemList.dat.gv >ItemList.dat.gv.png
+msmohiti@matrix:~/oop345/ms4> g++ -o t -std=c++0x t.cpp i.cpp util.cpp o.cpp o-test.cpp
+msmohiti@matrix:~/oop345/ms4> t Orders.dat "|"
+customer, product, itemList = Fardad Soleimanloo | Dell Precision 3600 | CPU | Memory | Memory
+customer, product, itemList = Joseph Hughes | HP Z230 | CPU | Memory
+customer, product, itemList = Chris Szalwinski | HP Z350 | CPU | Memory | SSD | GPU
+customer, product, itemList = Elliott Coleshill | HP Apollo 1000 | CPU | MEMORY | Power Supply | GPU
+dot -Tpng Orders.dat.gv >Orders.dat.gv.png
+msmohiti@matrix:~/oop345/ms4> cat TaskList.dat.gv
+digraph taskGraph {
+"Power Supply"->"Motherboard" [color=green];
+"Motherboard"->"Remove CPU" [color=red];
+"Motherboard"->"CPU" [color=green];
+"Remove CPU"->"CPU" [color=green];
+"CPU"->"Remove CPU" [color=red];
+"CPU"->"Memory" [color=green];
+"Remove CPU"->"CPU" [color=green];
+"Memory"->"Remove Memory" [color=red];
+"Memory"->"SSD" [color=green];
+"Remove Memory"->"Memory" [color=green];
+"SSD"->"Remove SSD" [color=red];
+"SSD"->"GPU" [color=green];
+"Remove SSD"->"SSD" [color=green];
+"GPU"->"Test" [color=green];
+"Test"->"Repair" [color=red];
+"Test"->"Approve" [color=green];
+Repair
+Approve
+}
+
+msmohiti@matrix:~/oop345/ms4>cat ItemList.dat.gv
+digraph itemgraph {
+"Item
+CPU"->"Installer
+CPU"[color=green];
+"Item
+CPU"->"Remover
+Remove CPU"[color=red];
+"Item
+Memory"->"Installer
+Memory"[color=green];
+"Item
+Memory"->"Remover
+Remove Memory"[color=red];
+"Item
+GPU"->"Installer
+GPU"[color=green];
+"Item
+GPU"->"Remover
+Remove GPU"[color=red];
+"Item
+Power Supply"->"Installer
+Power Supply"[color=green];
+"Item
+Power Supply"->"Remover
+Remove Power Supply"[color=red];
+}
+msmohiti@matrix:~/oop345/ms4> cat Orders.dat.gv
+digraph myGraph{
+"Fardad Soleimanloo"->"CPU"[color=green];
+"Fardad Soleimanloo"->"Memory"[color=green];
+"Fardad Soleimanloo"->"Memory"[color=green];
+"Joseph Hughes"->"CPU"[color=green];
+"Joseph Hughes"->"Memory"[color=green];
+"Chris Szalwinski"->"CPU"[color=green];
+"Chris Szalwinski"->"Memory"[color=green];
+"Chris Szalwinski"->"SSD"[color=green];
+"Chris Szalwinski"->"GPU"[color=green];
+"Elliott Coleshill"->"CPU"[color=green];
+"Elliott Coleshill"->"MEMORY"[color=green];
+"Elliott Coleshill"->"Power Supply"[color=green];
+"Elliott Coleshill"->"GPU"[color=green];
+}
+msmohiti@matrix:~/oop345/ms4> exit
+exit
+
+Script done on Sat 14 Apr 2017 10:08:52 AM EDT

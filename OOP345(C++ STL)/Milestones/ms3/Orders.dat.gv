@@ -1,0 +1,15 @@
+digraph myGraph{
+"Fardad Soleimanloo"->"CPU"[color=green];
+"Fardad Soleimanloo"->"Memory"[color=green];
+"Fardad Soleimanloo"->"Memory"[color=green];
+"Joseph Hughes"->"CPU"[color=green];
+"Joseph Hughes"->"Memory"[color=green];
+"Chris Szalwinski"->"CPU"[color=green];
+"Chris Szalwinski"->"Memory"[color=green];
+"Chris Szalwinski"->"SSD"[color=green];
+"Chris Szalwinski"->"GPU"[color=green];
+"Elliott Coleshill"->"CPU"[color=green];
+"Elliott Coleshill"->"MEMORY"[color=green];
+"Elliott Coleshill"->"Power Supply"[color=green];
+"Elliott Coleshill"->"GPU"[color=green];
+}

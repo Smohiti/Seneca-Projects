@@ -1,0 +1,233 @@
+﻿Script started on Mon 03 Apr 2017 02:01:32 PM EDT
+msmohiti@matrix:~/OOP345/w9> whoami
+msmohiti
+msmohiti@matrix:~/OOP345/w9> cat w9.cpp Element.h List.h
+#include <iostream>
+#include <iomanip>
+#include "Element.h"
+#include "List.h"
+
+const int FWC = 5;
+const int FWD = 12;
+const int FWP = 8;
+
+w9::List<w9::Product> merge(const w9::List<w9::Description>& desc,
+	const w9::List<w9::Price>& price) {
+	w9::List<w9::Product> priceList;
+
+	for (int x = 0; x < desc.size(); x++) {
+		for (int y = 0; y < price.size(); y++) {
+			if (desc[x].code == price[y].code) {
+				std::unique_ptr<w9::Product> product(new w9::Product(
+					desc[x].desc, price[y].price
+				));
+				product->validate();
+				priceList += std::move(product);
+			}
+		}
+	}
+
+	// complete this part
+
+	return priceList;
+}
+
+int main(int argc, char** argv) {
+	std::cout << "\nCommand Line : ";
+	for (int i = 0; i < argc; i++) {
+		std::cout << argv[i] << ' ';
+	}
+	std::cout << std::endl;
+	if (argc != 3) {
+		std::cerr << "\n***Incorrect number of arguments***\n";
+		return 1;
+	}
+
+	try {
+		w9::List<w9::Description> desc(argv[1]);
+		std::cout << std::endl;
+		std::cout << std::setw(FWC) << "Code" <<
+			std::setw(FWD) << "Description" << std::endl;
+		std::cout << desc << std::endl;
+		w9::List<w9::Price> price(argv[2]);
+		std::cout << std::endl;
+		std::cout << std::setw(FWC) << "Code" <<
+			std::setw(FWP) << "Price" << std::endl;
+		std::cout << price << std::endl;
+		w9::List<w9::Product> priceList = merge(desc, price);
+		std::cout << std::endl;
+		std::cout << std::setw(FWD) << "Description" <<
+			std::setw(FWP) << "Price" << std::endl;
+		std::cout << priceList << std::endl;
+	}
+	catch (const std::string& msg) {
+		std::cerr << msg << std::endl;
+	}
+	catch (const char* msg) {
+		std::cerr << msg << std::endl;
+	}
+
+	std::cout << "\nPress any key to continue ... ";
+	std::cin.get();
+}#pragma once
+
+// Workshop 9 - Smart Pointers
+// Element.h
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <fstream>
+
+extern const int FWC;
+extern const int FWD;
+extern const int FWP;
+
+namespace w9 {
+
+	struct Description {
+		unsigned code;
+		std::string desc;
+		bool load(std::ifstream& f) {
+			f >> code >> desc;
+			return f.good();
+		}
+
+		void display(std::ostream& os) const {
+			os << std::setw(FWC) << code << std::setw(FWD)
+				<< desc << std::endl;
+		}
+	};
+
+	struct Price {
+		unsigned code;
+		double price;
+		bool load(std::ifstream& f) {
+			f >> code >> price;
+			return f.good();
+		}
+		void display(std::ostream& os) const {
+			os << std::setw(FWC) << code << std::setw(FWP)
+				<< price << std::endl;
+		}
+	};
+
+	struct Product {
+		std::string desc;
+		double price;
+		Product() {}
+		Product(const std::string& str, double p) : desc(str), price(p) {}
+		void display(std::ostream& os) const {
+			os << std::setw(FWD) << desc << std::setw(FWP)
+				<< price << std::endl;
+		}
+
+		void validate() {
+			if (price < 0) {
+				throw std::string("Error: Files can not include negative prices");
+			}
+		}
+	};
+}#pragma once
+// Workshop 9 - Smart Pointers
+// List.h
+
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <memory>
+
+namespace w9 {
+	template <typename T>
+	class List {
+		std::vector<T> list;
+	public:
+		List() { }
+		List(const char* fn) {
+			std::ifstream file(fn);
+			if (!file)
+				throw std::string("*** Failed to open file ") +
+				std::string(fn) + std::string(" ***");
+			while (file) {
+				T e;
+				if (e.load(file))
+					list.push_back(*new T(e));
+			}
+		}
+
+		size_t size() const { return list.size(); }
+		const T& operator[](size_t i) const { return list[i]; }
+
+		void operator+=(std::unique_ptr<T> p) {
+			list.push_back(std::move(*p));
+		}
+
+		void display(std::ostream& os) const {
+			os << std::fixed << std::setprecision(2);
+			for (auto& e : list)
+				e.display(os);
+		}
+	};
+
+	template<typename T>
+	std::ostream& operator<<(std::ostream& os, const List<T>& l) {
+		l.display(os);
+		return os;
+	}
+
+}
+msmohiti@matrix:~/OOP345/w9> g++ -o w3 -std=c++0x w9.cpp
+msmohiti@matrix:~/OOP345/w9> w9 Descriptions.dat Prices.dat
+
+Command Line : w9 Descriptions.dat Prices.dat 
+
+ Code Description
+ 4662    tomatoes
+ 4039   cucumbers
+ 4056    brocolli
+ 4067      lemons
+ 4068     oranges
+
+ Code   Price
+ 4067    0.99
+ 4068    0.67
+ 4039    1.99
+ 4056    2.49
+
+
+  Description   Price
+   cucumbers    1.99
+    brocolli    2.49
+      lemons    0.99
+     oranges    0.67
+
+
+
+Press any key to continue ... 
+msmohiti@matrix:~/OOP345/w9> w9 Descriptions.dat Ba dPrices.dat
+
+Command Line : w9 Descriptions.dat BadPrices.dat 
+
+ Code Description
+ 4662    tomatoes
+ 4039   cucumbers
+ 4056    brocolli
+ 4067      lemons
+ 4068     oranges
+
+
+ Code   Price
+ 4067    0.99
+ 4068    0.67
+ 4039    1.99
+ 4056   -2.49
+
+*** Negative prices are invalid ***
+
+Press any key to continue ... 
+msmohiti@matrix:~/OOP345/w9> exit
+exit
+
+Script done on Mon 03 Apr 2017 02:05:32 PM EDT
