@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+ <html>
+  <head>
+    <title>Table</title>
+    <meta charset="UTF-8" />
+	<link rel="stylesheet" href="css/normalize.css"/>
+	<link rel="stylesheet" href="css/lab3-theme.css"/>
+	<link rel="stylesheet" href="css/site.css"/>
+</head>
+<body>
+
+	<header>
+		<div class="center">
+			<h2>
+			INT222 - Lab 03A HTML
+			</h2>
+		</div>
+	</header>
+	<nav>
+		<div class="center">
+		<ul>	
+			<li><a href="index.html">Lab3 Home</a></li>
+			<li><a href="list.html">List</a></li>
+			<li><a href="table.html">Table</a></li>
+			<li><a href="image.html">Image</a></li>
+			<li><a href="audio.html">Audio</a></li>
+			<li><a href="video.html">Video</a></li>
+			<li><a href="seneca.html">Seneca</a></li>
+			<li><a href="honesty.html">Honesty</a></li>
+		</ul>
+		</div>
+	</nav>
+		
+	<section class="main center">
+	
+	<!-- Start your code here -->
+		<h2>HTML Table Page</h2>
+
+                <table id="tableA">
+            <caption>Cars Specification</caption>
+
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Hp</th>
+                <th>0-96 KM</th>
+            </tr>
+
+            <tr>
+                <td>Chevrolet</td>
+                <td>Corvette</td>
+                <td>2016</td>
+                <td>650</td>
+                <td>2.9 sec</td>
+            </tr>
+
+            <tr>
+                <td>Ford</td>
+                <td>Gt40</td>
+                <td>2017</td>
+                <td>600</td>
+                <td>3.2 sec</td>
+            </tr>
+
+            <tr>
+                <td>Dodge</td>
+                <td>Viper</td>
+                <td>2016</td>
+                <td>645</td>
+                <td>3 sec</td>
+            </tr>
+
+        </table>
+        <hr>
+
+        <table id="tableB">
+            <caption>Chevy Engine Performance Upgrade</caption>
+
+            <thead>
+
+                <tr>
+                    <th>Part#</th>
+                    <th>Detail</th>
+                    <th>Brand </th>
+                    <th>Price USD</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>07-503-8</td>
+                    <td>Camshaft</td>
+                    <td>Comp Cam</td>
+                    <td>$277.99</td>
+                </tr>
+
+                <tr>
+                    <td>0-6210</td>
+                    <td>Carburator</td>
+                    <td>Holley</td>
+                    <td>$497.95</td>
+                </tr>
+
+                <tr>
+                    <td>506A3</td>
+                    <td>Piston</td>
+                    <td>Wiseco</td>
+                    <td>$410.00</td>
+                </tr>             
+
+                <tr>
+                    <td>7561</td>
+                    <td>Intake</td>
+                    <td>Edelbrock</td>
+                    <td>$317.33</td>
+                </tr>
+
+            </tbody>
+
+            <tfoot>
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Total:</td>
+                    <td>$1,523.27</td>
+                </tr>
+
+            </tfoot>
+
+        </table>
+	
+	
+	<!-- End your code here  -->
+	
+	</section>
+	<footer>
+	  <div class="center">
+		  <script type="text/javascript">		
+				  var dt=new Date(document.lastModified);   
+				  document.write('This page was last updated on '+dt.toLocaleString()) 		
+		  </script>
+	  </div>
+	</footer>
+</body>
+</html>	  

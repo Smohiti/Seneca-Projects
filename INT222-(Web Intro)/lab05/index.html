@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+
+
+
+      <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+
+<div class="wrapper">
+<nav>JobSearch.com</nav>
+  <h2 id="account">Create your Account</h2>
+  <p id="required">* Required information</p>
+
+ <form name="signup" action="https://httpbin.org/post" method="post" onsubmit='return formValidation()' onreset="resetHandler();">
+<div class="info">
+
+    <h3>Basic Information</h3>
+    <!-- Email -->
+    <label for="email">Email <span class="ast"> *</span></label>
+    <input type="email" name="email" id="email" autofocus required/><br>
+
+    <!-- 1st Password -->
+    <label for="password">Password <span class="ast"> *</span></label>
+    <input type="password" name="password" id="password" required/><br>
+    <div class="errors" id="password_error"></div>
+    <!-- 2nd Password -->
+    <label for="passcon">Required Password <span class="ast"> *</span></label>
+    <input type="password" name="passcon" id="passcon" required/><br>
+    <div class="errors" id="passcon_error"></div>
+    <!-- First Name -->
+    <label for="first">First Name<span class="ast"> *</span></label>
+    <input type="text" name="first" id="first" required/><br>
+    <div class="errors" id="first_error"></div>
+    <!-- Last Name -->
+    <label for="last">Last Name<span class="ast"> *</span></label>
+    <input type="text" name="last" id="last" required/><br>
+    <div class="errors" id="last_error"></div>
+    <!-- Phone -->
+    <label for="phone">Phone Number<span class="ast"> *</span></label>
+    <input type="tel" name="phone" id="phone" placeholder="999-999-9999" required/><br>
+    <div class="errors" id="phone_error"></div>
+    <!-- Address -->
+    <label for="address">Address<span class="ast"> *</span></label>
+    <input type="text" name="address" id="address" required/><br>
+
+    <!-- City -->
+    <label for="city">City<span class="ast"> *</span></label>
+    <input type="text" name="city" id="city" required/><br>
+
+    <!-- Province -->
+    <label for="province">Province<span class="ast"> *</span></label>
+    <select name="province" id="province" required>
+      <option value="" disabled selected>Alberta</option>
+      <optgroup label="Provinces">
+        <option value="AB">Alberta</option>
+        <option value="BC">British Columbia</option>
+        <option value="MB">Manitoba</option>
+        <option value="NB">New Brunswick</option>
+        <option value="NL">Newfoundland and Labrador</option>
+        <option value="NS">Nova Scotia</option>
+        <option value="ON">Ontario</option>
+        <option value="PE">Prince Edward Island</option>
+        <option value="QC">Quebec</option>
+        <option value="SK">Saskatchewan</option>
+      </optgroup>
+      <optgroup label="Territories">
+        <option value="NT">Northwest Territories</option>
+        <option value="NU">Nunavut</option>
+        <option value="YT">Yukon</option>
+      </optgroup>
+    </select><br>
+    <div class="errors" id="province_error"></div>
+      <!-- Country -->
+     <label for="country">Country<span class="ast"> *</span></label>
+     <input type="text" name="country" id="country" list="countries" required/>
+     <datalist id="countries">
+      <option value="Canada"></option>
+      <option value="United States"></option>
+      <option value="Brazil"></option>
+      <option value="Germany"></option>
+      <option value="Spain"></option>
+     </datalist>
+     <div class="errors" id="country_error"></div>
+
+
+
+  </div>
+  <div class="education">
+
+    <h3>Education</h3>
+    <!-- School -->
+    <label for="school">School<span class="ast"> *</span></label>
+    <input type="text" name="school" id="school" required/><br>
+    <div class="errors" id="school_error"></div>
+    <!-- Program -->
+    <label for="program">Program<span class="ast"> *</span></label>
+    <input type="text" name="program" id="program" required/><br>
+    <div class="errors" id="program_error"></div>
+    <!-- Education Level -->
+    <label for="education">Education Level<span class="ast"> *</span></label>
+    <select name="education" id="education" required >
+      <option value="" >-select-</option>
+      <option value="TD">Technical Diploma</option>
+      <option value="CD">College Diploma</option>
+      <option value="BD">Bachelor's Degree</option>
+      <option value="MD">Master's Degree</option>
+      <option value="O">Others</option>
+    </select><br>
+    <div class="errors" id="education_error"></div>
+    <!-- Education Status -->
+    <label class="empty">Education Status</label>
+    <fieldset>
+    <legend>Education Status</legend>
+      <input type="radio" name="edu" id="graduated"/>
+      <label for="graduated">Graduated</label><br />
+      <input type="radio" name="edu" id="enrolled"/>
+      <label for="enrolled">Currently Enrolled</label><br />
+      <input type="radio" name="edu" id="notgraduate"/>
+      <label for="notgraduate">Did Not Graduate</label><br />
+    </fieldset><br>
+    <div class="errors" id="educationstatus_error"></div>
+    <!-- Graduation Date -->
+    <label for="graddate">Graduation Date<span class="ast"> *</span></label>
+    <input type="text" name="graddate" id="graddate" required/><br>
+    <div class="errors" id="graddate_error"></div>
+
+
+  </div>
+  <div class="work">
+
+    <h3>Work Experience</h3>
+    <!-- EMployer -->
+    <label for="employer">Employer</label>
+    <input type="text" id="employer"/><br>
+    <!-- Job Title -->
+    <label for="jobtitle">Job Title</label>
+    <input type="text" id="jobtitle" /><br>
+    <!-- Job Duty -->
+    <label for="jobduty">Job Duty</label>
+    <textarea id="jobduty"></textarea><br>
+    <!-- Worked Years -->
+    <label for="workedyears">Worked Year</label>
+    <input type="number" max="20" min="1" id="workedyears"/><br>
+
+
+  </div>
+  <div class="attachments">
+    <h3>Attachments</h3>
+    <label for="file">Attachments</label>
+    <input id="file" type="file"/>
+    <div class="buttons">
+
+  <input type="reset" value="Reset"/>
+  <input type="submit"  value="Apply"/>
+  </div>
+  </div>
+
+
+
+
+  </form>
+</div>
+    <script src="js/index.js"></script>
+
+</body>
+</html>

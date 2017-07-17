@@ -1,0 +1,150 @@
+/********************************************************************************* 
+*
+* INT222 – Lab #3a
+*
+* I declare that this assignment is my own work in accordance with Seneca 
+* Academic Policy. No part of this assignment has been copied manually or 
+* electronically from any other source (including web sites) or distributed to 
+* other students. 
+* 
+* Name: M.Saeed Mohiti  Student ID: 116236159  Date: 10/24/2016 
+* 
+********************************************************************************/
+
+/*****Step 1*****/
+
+/* Select all elements of 'main-container' class set the width and all sides margin */
+
+.main-container {
+    max-width: 960px;
+    margin: 0 auto 0 auto;  
+}
+
+/* select all elements of 'nav' inside the 'main-container' class, set the width
+and layer to the left   */
+
+.main-container nav {
+    width: 30%;
+    float: left;
+}
+
+/* select the elemnts of 'main' class inside the 'main-container' class ,set the width
+and layer to the right  */
+
+.main-container .main {
+    width: 70%;
+    float: right;
+}
+
+/* select the header element inside the 'main-container' class ,set the padding for all
+position, change the backgound color ,set the bottom margin and make the border for 
+bottom side of header */
+
+.main-container header {
+    padding: 10px;
+    background-color: #eeeeee;
+    border-bottom: 1px thick #cccccc;
+    margin-bottom: 30px;
+}
+
+/* select the h1 element inside the header inside the 'main-container' class then set
+the top margine, font size and width, also set the layer and text alignment to the right */
+
+.main-container header h1 {
+    width: 70%;
+    font-size: 24px;
+    float: right;
+    text-align: right;
+    margin-top: 10px;
+}
+
+/* select the footer element which is chiled to 'main-container' class ,then set the 
+padding for all sides, set the background color, make a border only for top side,
+set the font size and clear both side of the footer */
+
+.main-container footer {
+    clear: both;
+    padding: 20px 10px 20px 10px;
+    background-color: #eeeeee;
+    border-top: 1px thick #cccccc;
+    font-size: 13px;
+}
+
+
+/*****Step 2*****/
+
+
+/* select the id 'logo' element, then set the width, and font peoperties */
+
+#logo {
+    width: 30%;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* select all elements from 'img' which is chiled to id 'logo',then set the width
+and align them to the middle */
+
+#logo img {
+    width: 94px;
+    vertical-align: middle;
+}
+
+/* remove all dots from all elemnts of unorder list elemnts which is belong to <nav> */
+
+nav ul {
+    list-style-type: none;
+}
+
+/* it takes all ements from <ul> that is belong to <nav> and display text 
+as a block style, remove the decoration and set the padding to all sides */
+
+nav ul a {
+    display: block;
+    text-decoration: none;
+    padding: 5px;
+}
+
+/*****Step 3*****/
+
+/* select class of 'province' in <div> and set the width margin and heigh, also 
+set the layer to the left */
+
+div.province {
+    width: 30%;
+    float: left;
+    margin: 8px;
+    height: 310px;
+}
+
+/* select the elemnts of class 'description' that is chiled of class 'province' in 
+<div>;set the maximum hight, top margine and bottom margin,if the text is going to be
+ more than max height (verticaly), then is adding scrollbar If the content does
+not fit in the container horizontally, hide the scrollbar */
+
+div.province .description {
+    max-height: 165px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+/* select the elements from class 'province' in <div>;display the text 
+in block style and align the text to te center, set the background and color 
+the the specified code, and add padding to all sides */
+
+div.province a {
+    display: block;
+    text-align: center;
+    background-color: #555555;
+    color: #eeeeee;
+    text-decoration: none;
+    padding: 5px;
+}
+
+/* set the width of all flags pictures are exist in class 'flag, to 100% */
+
+img.flag {
+    width: 100%;
+}

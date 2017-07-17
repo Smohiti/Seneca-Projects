@@ -1,0 +1,144 @@
+/*Importing Fonts*/
+@import url('https://fonts.googleapis.com/css?family=Alegreya');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+/*Main Styles*/
+*{
+  font-family:"Open Sans";
+}
+body{
+  background-color:#CCCCCC;
+}
+.wrapper{
+  width:80%;
+  margin:0 auto;
+  background-color:white;
+}
+h1,h2,h3,h4,h5,h6,nav{
+  font-family:"Alegreya";
+}
+h3{
+  display:block;
+  background-color:#DDDDDD;
+  font-weight:bold;
+  margin:10px 0px;
+}
+nav{
+  background-color:#F40000;
+  color:white;
+  border-radius:5px 5px 0 0;
+  padding-left:20px;
+  font-weight:bold;
+  font-size:150%;
+}
+/*Form Styles*/
+form{
+  width:95%;
+  margin:0 auto;
+}
+form > div{
+  background-color:#F6F6F6;
+  margin-bottom:15px;
+  padding-bottom:15px;
+}
+/*Label Styles*/
+label{
+  padding-top:10px;
+  width:30%;
+  padding-left:25px;
+  padding-right:10px;
+  text-align:right;
+  clear:both;
+  float:left;
+}
+/*Input fields + textarea + select*/
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="tel"],
+input[type="number"],
+input[type="file"],textarea,select{
+  border-radius: 5px;
+  width:40%;
+  margin-top:10px;
+  box-shadow:0px 1px 1px 0px #ccc;
+  -moz-box-shadow:    0px 1px 1px 0px #ccc;
+  -webkit-box-shadow: 0px 1px 1px 0px #ccc;
+  box-shadow:         0px 1px 1px 0px #ccc;
+  padding-left: 5px;
+}
+input:focus{
+    outline: none !important;
+    border:0.5px solid blue;
+    box-shadow: 0 0 5px #719ECE;
+}
+/*Errors Field Styling*/
+.errors{
+  clear:both;
+  padding-left:38%;
+  font-size:70%;
+  color:grey;
+  font-weight:bold;
+  padding-top:0;
+  margin-top:0;
+}
+#password_error:first-letter,
+#first_error:first-letter,
+#last_error:first-letter,
+#passcon_error:first-letter,
+#phone_error:first-letter{
+  color:red;
+  font-weight:bold;
+  font-size:110%;
+}
+/*Buttons*/
+.buttons{
+  text-align:center;
+  padding-top:20px;
+}
+input[type="submit"]{
+  margin-left:15px;
+}
+input[type="submit"],input[type="reset"]{
+  width:80px;
+  color:white;
+  background-color:red;
+  border-radius:5px;
+  border:1px solid black;
+}
+/*Style for the required star*/
+.ast{
+  color:red;
+}
+/*Fieldset*/
+fieldset{
+  width:36%;
+}
+fieldset label{
+  font-size:80%;
+  float:none;
+  text-align: left;
+  vertical-align:text-top;
+  width:50%;
+  padding-left: 0px;
+  padding-top: 10px;
+}
+fieldset input{
+  box-shadow:0px 0px 0px 0px #ccc;
+  width:10%;
+  -moz-box-shadow:    0px 0px 0px 0px #ccc;
+  -webkit-box-shadow: 0px 0px 0px 0px #ccc;
+  box-shadow:         0px 0px 0px 0px #ccc;
+}
+fieldset input[type="radio"]{
+  float:left;
+}
+/*Specific Classes*/
+.empty{
+  color:#F6F6F6;
+}
+#account{
+  padding-left:20px;
+}
+#required{
+  padding-left:20px;
+}

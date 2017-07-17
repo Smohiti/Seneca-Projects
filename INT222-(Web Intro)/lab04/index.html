@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-container">
+    <header class="header">
+      <h1>Welcome to My World</h1>
+      <a id="H">... or At least My Website</a>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="">Courses</a>
+          <ul>
+            <li><a href="https://ict.senecacollege.ca/course/oop244?q=course/oop244">OOP244</a></li>
+            <li><a href="https://ict.senecacollege.ca/course/INT222?q=course/INT222">INT222</a></li>
+            <li><a href="https://ict.senecacollege.ca/course/ibc233?q=course/ibc233">IBC233</a></li>
+            <li><a href="https://ict.senecacollege.ca/course/dbs201?q=course/dbs201">DBS201</a></li>
+            <li><a href="https://ict.senecacollege.ca/course/can560">CAN560</a></li>
+          </ul>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="honesty.html">Honesty</a></li>
+        <li><a href="">Links</a>
+          <ul>
+            <li><a href="#">Item 1</a></li>
+            <li><a href="#">Item 2</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    </header>
+
+    <aside class="aside">
+      <h2>Saeed Mohiti</h2>
+      <ul>
+        <li id="propic"><img src="image/propic.gif" alt="profile picture"></li>
+          <li><ul id="hover">
+            <li id="loc"><a><img src="image/loc.png" alt="Location Canada"></a></li>
+            <li class="addpop"><a>Richmond hill Canada</a><img src="image/flag.gif" alt="" /></li>
+          </ul></li>
+        <li><a href="mailto:msmohiti@myseneca.ca" target="_blank"><img src="image/mail.png" alt="email me"></a></li>
+        <li><a href="https://www.linkedin.com/in/sam-mohiti-34292b129"><img src="image/in.png" alt="Linkedin"></a></li>
+      </ul>
+    </aside>
+    <main class="main">
+      <h2>Articles</h2>
+        <article id="a1">
+          <h3>Article 1</h3>
+          <header class="entry_header">Basic HTML rules</header>
+          <section class="entry-content">
+            <h6>Because headers are important</h6>
+            <p>
+            Before you begin building your page, you'll need to decide on a basic page layout. To do this, just sit down with some old-fashioned paper and a pencil and start sketching, blocking out the page's elements. You may be itching to get coding, but by drawing your site out first you can rearrange designs to your heart's content without having to code and recode.
+            </p>
+            <p>
+              Once you've settled on the organization of your site, it's time to begin creating your pages with HTML <i>tags</i> the instructions that surround material such as text, images, and links to other pages and tell the viewer's Web browser how to display them. If you want an image to show up on the left side of the page, a certain word to appear bold, or another word to link to an outside resource, you'll use HTML tags to do it.
+            </p>
+            <p>
+              There are five important rules for coding with HTML tags.
+            </p>
+            <ol><li>Tags are always surrounded by angle brackets (less-than/greater-than characters), as in <code>&lt;HEAD&gt;</code>.</li>
+
+              <li>Most tags come in pairs and surround the material they affect. They work like a light switch: the first tag turns the action on, and the second turns it off. (There are some exceptions. For instance, the <code>&lt;BR&gt;</code> tag creates a blank line and doesn't have an "off switch." Once you've made a line break, you can't unmake it.)</li>
+
+              <li>The second tag the "off switch" always starts with a forward slash. For example, you turn on bold with <code>&lt;B&gt;</code>, shout your piece, and then go back to regular text with <code>&lt;/B&gt;</code>.</li>
+
+              <li>First tag on, last tag off. Tags are embedded, so when you start a tag within another tag, you have to close that inner tag before closing the outer tag. For instance, the page will not display properly with the tags in this order:
+
+                <code>&lt;HEAD&gt;&lt;TITLE&gt;</code>Your text<code>&lt;/HEAD&gt;&lt;/TITLE&gt;</code>.
+
+                The correct order is:
+
+                <code>&lt;HEAD&gt;&lt;TITLE&gt;</code>Your text<code>&lt;/TITLE&gt;&lt;/HEAD&gt;</code>. </li>
+
+              <li>Many tags have optional <i>attributes</i> that use <i>values</i> to modify the tag's behavior. The <code>&lt;P&gt;</code> (paragraph) tag's <code>ALIGN</code> attribute, for instance, lets you change the default (left) paragraph alignment. For example, <code>&lt;P ALIGN=CENTER&gt;</code> centers the next paragraph on the page.
+              </li></ol><p></section>
+          <footer class="entry-footer">Fred Dekker and Donald St. John | 2003 | HTML</footer>
+        </article>
+      <article id="a2">
+        <h3>Article 2</h3>
+        <header class="entry_header">Shorthand in CSS</header>
+        <section class="entry-content">
+          <h6>Trick</h6><p>Recently I posted about a little trick about <a href="http://css-tricks.com/remember-selectors-with-love-and-hate/">remembering the css anchor selectors</a>. Now I have another little trick that is even more useful, using the word TROUBLE to remember the order of padding/margin amounts in CSS shorthand.  The trick is that the <em>first four consonants in the word</em> are the first letters of "<strong>T</strong>op", "<strong>R</strong>ight", "<strong>B</strong>ottom" and "<strong>L</strong>eft". I love this trick because I can <em>never</em> seem to remember which ones are which. I have had such trouble with it I've actually been up in the air on whether I use CSS shorthand at all because sometimes I feel it makes the code less readable. Now I'll never forget! Here is a little graphic to help cement it to our minds.</p>
+          <p><img src='https://css-tricks.com/wp-content/uploads/2007/10/trouble.gif' alt='trouble.gif' /></p></section>
+        <footer class="entry-footer">Chris Coyier | 2007 | HTML/CSS</footer>
+      </article>
+      <article id="a3">
+        <h3>Article 3</h3>
+        <header class="entry_header">The difference between <code>&lt;article&gt;</code> and <code>&lt;section&gt;</code></header>
+        <section class="entry-content">
+          <h6>Another trick</h6><p>There&#8217;s been <a href="http://adactio.com/journal/1654/">a lot of confusion</a> over the difference (or perceived lack of a difference) between the <code>&lt;article&gt;</code> and <code>&lt;section&gt;</code> elements in <abbr>HTML</abbr>5. The <code>&lt;article&gt;</code> element is a specialised kind of <code>&lt;section&gt;</code>; it has a more specific semantic meaning than <code>&lt;section&gt;</code> in that it is <strong>an independent, self-contained</strong> block of related content. We <em>could</em> use <code>&lt;section&gt;</code>, but using <code>&lt;article&gt;</code> gives more semantic meaning to the content.</p>
+
+          <p>By contrast <code>&lt;section&gt;</code> is only a block of <em>related</em> content, and <code>&lt;div&gt;</code> is only a block of content. Also as mentioned above the <code>pubdate</code> attribute doesn&apos;t apply to <code>&lt;section&gt;</code>. To decide which of these three elements is appropriate, choose the first suitable option:</p>
+
+          <ol>
+            <li>Would the content would make sense on its own in a feed reader? If so use <code>&lt;article&gt;</code></li>
+            <li>Is the content related? If so use <code>&lt;section&gt;</code></li>
+            <li>Finally if there&apos;s no semantic relationship use <code>&lt;div&gt;</code></li>
+          </ol>
+
+          <p><a href="http://html5doctor.com/author/brucel">Dr Bruce</a> has written <a href="http://www.brucelawson.co.uk/2010/html5-articles-and-sections-whats-the-difference/">HTML5 <code>&lt;article&gt;</code>s and <code>&lt;section&gt;</code>s, what&apos;s the difference?</a>, so we recommend reading that if you are still fuzzy on when to use <code>&lt;article&gt;</code>.</p>
+        </section>
+        <footer class="entry-footer">Tom Leadbetter | 2010 | HTML5
+        </footer>
+      </article>
+    </main>
+    <div class="ads">
+      <h2>Archive</h2>
+      <ul>
+      <li><a href="#a1">Post 1</a></li>
+      <li><a href="#a2">Post 2</a></li>
+      <li><a href="#a3">Post 3</a></li>
+      </ul>
+    </div>
+
+  </div>
+  <footer id="ftr">&copy;2016 &ndash; Saeed Mohiti</footer>
+</body>
+</html>
