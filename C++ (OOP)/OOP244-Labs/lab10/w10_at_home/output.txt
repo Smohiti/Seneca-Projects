@@ -1,0 +1,14 @@
+-><- len: 0, mem: 0
+->Two<- len: 3, mem: 10
+->Three<- len: 5, mem: 6
+->Three<- len: 5, mem: 6
+->Thirty One<- len: 10, mem: 500
+Thirty One
+->One<- len: 3, mem: 4
+->One <- len: 4, mem: 5
+->One Two<- len: 7, mem: 8
+->One Two<- len: 7, mem: 8
+->One Two Three<- len: 13, mem: 500
+-> One Two Three<- len: 14, mem: 500
+> One Two Three<
+->XOneXTwoXThree<- len: 14, mem: 500

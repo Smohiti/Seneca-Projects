@@ -1,0 +1,18 @@
+1-Why was it not necessary to create an isEmpty() member function? 
+A))because already we have it in bce class and we can reuse it with derived class.
+
+2-What privacy access level did you set for your strength member attribute?
+A))the data member of strength is set to private level , for that reason is not accessable by derived class.
+
+3-How would you modify your solution to make the strength member attribute private?
+A))just need to change the the base access type from public to private:
+class SuperHero : private Hero
+
+4-How would your solution need to be modified in order for the SuperHero::display member function object to 
+display the deceased SuperHero’s name?  For example, the function would be modified to print “(name) the 
+deceased superhero!”  Explain in plain English.
+A))by changing the strength to 0 in the compare function and then change the isEmpty function to check the value of strength.
+after that we modify the display function by adding the name_ before deceased superhero!.
+
+5-View line 43 in w8_at_home.cpp file. Why does this compile?  Uncomment lines 47–48. Does it compile now? Explain why or why not?
+A))dosent work, because it only know the base class and its members .the SuperHero is not the base class so its unknown for compiler.

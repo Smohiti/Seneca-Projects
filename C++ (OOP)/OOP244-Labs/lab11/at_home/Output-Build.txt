@@ -1,0 +1,5 @@
+﻿1>------ Build started: Project: at_home, Configuration: Debug Win32 ------
+1>  w11.cpp
+1>  at_home.vcxproj -> C:\Users\smohi\Desktop\sem2\OOP\11\at_home\Debug\at_home.exe
+1>  at_home.vcxproj -> C:\Users\smohi\Desktop\sem2\OOP\11\at_home\Debug\at_home.pdb (Full PDB)
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

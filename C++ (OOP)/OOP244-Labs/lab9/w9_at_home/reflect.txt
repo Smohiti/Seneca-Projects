@@ -1,0 +1,26 @@
+M.Saeed Mohiti
+
+
+1-Explain what virtual functions are.
+
+     Virtual function is the member function of a base class that can be overriden in its derived class.
+     A virtual function makes its class a polymorphic base class.
+     It is declared with virtual keyword. Virtual function call is resolved at run-time.
+
+2-What is the difference between virtual and pure virtual?
+
+     For virtual function we need to provide implementation in the base class. 
+     However derived class can override this implementation with its own implementation. 
+     Normally , for pure virtual functions implementation is not provided. 
+     We can make a function pure virtual with =0 at the end of function declaration. 
+     Also, a class containing a pure virtual function is abstract, we can not create an object of this class.
+
+3-What are abstract classes and interfaces?
+
+     A) Abstract classes
+        These are base classes where we have to derive from them and then implement the pure virtual function
+        These classes are contain at least one pure virtual function.
+        Veihcle class in out workshop is an Abstract
+
+     B) Interfaces
+        an interface is an abstract base class with no data members.

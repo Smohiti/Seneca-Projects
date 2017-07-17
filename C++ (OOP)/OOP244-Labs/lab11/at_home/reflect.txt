@@ -1,0 +1,17 @@
+M.Saeed Mohiti
+
+1-Explain why templates should exist entirely in header files and NOT *.cpp files.
+
+     They need to be visible for the compiler when they are instantiated. 
+     That basically means that if you are publishing the template in a header, 
+     the definitions have to be visible by all translation units that include 
+     that header if you depend on implicit instantiation.
+     The compiler generates the implementation for each client type at compile-time 
+     from the template defined by the developer.
+
+
+2-Name different types of polymorphism and show an example for each of the types from this workshop.
+
+     using virtual function in student class
+     using abstract and interface, derived and base class in student,empoyee and car header
+     usinf tempelate in validate header

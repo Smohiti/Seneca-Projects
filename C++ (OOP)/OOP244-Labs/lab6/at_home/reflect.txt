@@ -1,0 +1,20 @@
+
+
+1.	Explain why if possible, we should avoid using friend helper functions.
+
+        by defining an accessor inside the class we can avoid the friend function and have it as a helper function outside of the class.
+        Otherwise compiling prossess will fail and it shows the member is inaccessable.
+	
+
+2.	Could the first helper operator+ (which accepts Accounts as left and right operands) implemented as a member operator? 
+
+	as long as operator function has 2 parameters we cant use it inside class as a member and shoud be declare outside of class as a helper, 
+	because the left operand inside class well known as current object.
+	but if we want to implement it as a member function we have to remove left operand and move the function inside class like this:
+	Account& operator + ( const Account& object)
+
+3.	In this line of your main function:
+  	A = B += C += 100.01;
+	the under lined operator+= that accepts a double as right operand is never defined. Explain how is it, that the code compiles and runs correctly?
+
+	we have constructor function inside cpp file that convert the value ant take it into the operator function
