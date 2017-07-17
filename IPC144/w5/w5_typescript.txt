@@ -1,0 +1,146 @@
+Script started on Fri 24 Jun 2016 03:14:53 PM EDT
+msmohiti@matrix:~/IPC/w5> whoami
+msmohiti
+msmohiti@matrix:~/IPC/w5> cat w5.c
+#include <stdio.h>
+
+
+void rest_at_inn(float *days_remaining, int *hp_remaining, int *MAX) {
+
+    *hp_remaining = 10;
+    *days_remaining -= 1;
+    if (*days_remaining > 0)
+        printf("You rested up the at the inn\n\n");
+    else /*(*days_remaining<=0)*/
+        printf("Game Over!\n");
+
+}
+
+
+void train(float *days_remaining, int *hp_remaining, int *experience) {
+
+    *experience += 10;
+    *hp_remaining = *hp_remaining - 2;
+    *days_remaining = *days_remaining - 0.5;
+    printf("You did some training!\n\n");
+
+}
+
+
+void battle_demon_lord(int *current_hp) {
+
+    *current_hp = 0;
+    printf("He's too strong!\n\n");
+    printf("Game Over!\n");
+}
+
+
+void Quit_Game() {
+
+    printf("Good bye!\n\n");
+
+}
+
+int main() {
+
+    
+    float days_remaining = 8;
+    int current_hp = 10;
+    int hp_remaining = 10;
+    int MAX = 10;
+    int experience = 0;
+    int selection;
+
+
+     while (days_remaining > 0 && current_hp > 0 && selection != 4){
+
+        printf("\n\nDays remaining: %.1f  HP: %d  EXP: %d\n\n", days_remaining, hp_remaining, experience);
+        printf("1 - Rest at Inn\n");
+        printf("2 - Train\n");
+        printf("3 - Fight the Demon Lord\n");
+        printf("4 - Quit Game\n\n");
+        printf("Select:");
+        scanf("%d", &selection);
+        
+
+      
+            if(selection == 1)
+                rest_at_inn(&days_remaining, &hp_remaining, &MAX);
+                
+            if(selection == 2)
+                train(&days_remaining, &hp_remaining, &experience);
+                
+            if(selection == 3)
+                battle_demon_lord(&current_hp);
+                
+            if(selection == 4)
+                Quit_Game();
+      }         
+        
+
+
+    return 0;
+
+}
+
+
+
+
+msmohiti@matrix:~/IPC/w5> calng w5.c
+If 'calng' is not a typo you can use command-not-found to lookup the package that contains it, like this:
+    cnf calng
+msmohiti@matrix:~/IPC/w5> clang w5.c
+msmohiti@matrix:~/IPC/w5> a.out
+
+
+Days remaining: 8.0  HP: 10  EXP: 0
+
+1 - Rest at Inn
+2 - Train
+3 - Fight the Demon Lord
+4 - Quit Game
+
+Select:2
+You did some training!
+
+
+
+Days remaining: 7.5  HP: 8  EXP: 10
+
+1 - Rest at Inn
+2 - Train
+3 - Fight the Demon Lord
+4 - Quit Game
+
+Select:2
+You did some training!
+
+
+
+Days remaining: 7.0  HP: 6  EXP: 20
+
+1 - Rest at Inn
+2 - Train
+3 - Fight the Demon Lord
+4 - Quit Game
+
+Select:1
+You rested up the at the inn
+
+
+
+Days remaining: 6.0  HP: 10  EXP: 20
+
+1 - Rest at Inn
+2 - Train
+3 - Fight the Demon Lord
+4 - Quit Game
+
+Select:3
+He's too strong!
+
+Game Over!
+msmohiti@matrix:~/IPC/w5> exit
+exit
+
+Script done on Fri 24 Jun 2016 03:15:56 PM EDT

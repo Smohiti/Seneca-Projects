@@ -1,0 +1,86 @@
+Script started on Fri 03 Jun 2016 04:52:37 PM EDT
+msmohiti@matrix:~/IPC/w3> whoami
+msmohiti
+msmohiti@matrix:~/IPC/w3> cat w3.c
+#include <stdio.h>
+
+int main(void) {
+	int pStrength = 10, pDefense = 20, pIntelligence = 40, pHP = 10;
+	int eStrength = 30, eDefense = 40, eIntelligence = 25, eHP = 10;
+	int select = 0;
+
+	printf("Battle Start!\n\n");
+	while(pHP > 0 && eHP > 0){
+
+	        printf("Your HP: %d Enemy HP: %d\n", pHP, eHP);
+        	printf("1 - Attack\n2 - Magic");
+       		printf("\n\nSelect your move: ");
+       		scanf("%d", &select);
+
+	        if(select == 1){
+			eHP = eHP - ((float) pStrength / eDefense * 5);
+			printf("\nYou attacked the enemy!\n");
+		
+                }
+      		else if(select == 2){
+			eHP = eHP - (((float) pIntelligence / eIntelligence) * 5 );
+        		printf("\nYou shocked the enemy!\n");
+		}
+    		if(eHP <= 0) {
+        		printf("You won!\n\n");
+    		} else{
+		        pHP = pHP - ((float) eStrength / pDefense * 5);
+			printf("The enemy attacked you!\n");
+		}
+    		if(pHP <= 0) {
+        		printf("You died!\n\n");
+    		}
+	}
+    	return 0;
+}
+msmohiti@matrix:~/IPC/w3> clang w3.c
+msmohiti@matrix:~/IPC/w3> a.out
+Battle Start!
+
+Your HP: 10 Enemy HP: 10
+1 - Attack
+2 - Magic
+
+Select your move: 1
+
+You attacked the enemy!
+The enemy attacked you!
+Your HP: 2 Enemy HP: 8
+1 - Attack
+2 - Magic
+
+Select your move: 1
+
+You attacked the enemy!
+The enemy attacked you!
+You died!
+
+msmohiti@matrix:~/IPC/w3> a.out
+Battle Start!
+
+Your HP: 10 Enemy HP: 10
+1 - Attack
+2 - Magic
+
+Select your move: 2
+
+You shocked the enemy!
+The enemy attacked you!
+Your HP: 2 Enemy HP: 2
+1 - Attack
+2 - Magic
+
+Select your move: 2
+
+You shocked the enemy!
+You won!
+
+msmohiti@matrix:~/IPC/w3> exit
+exit
+
+Script done on Fri 03 Jun 2016 04:53:41 PM EDT

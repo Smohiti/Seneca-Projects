@@ -1,0 +1,30 @@
+Script started on Fri 20 May 2016 04:15:46 PM EDT
+msmohiti@matrix:~/IPC/codequest> whoami
+msmohiti
+msmohiti@matrix:~/IPC/codequest> cat week1.c
+// Code Quest Game
+// By M.Saeed Mohiti
+// Week 1
+
+#include <stdio.h>
+ int main (void)
+	{
+	printf("+-----------------------+\n");
+	printf("|                       |\n");
+	printf("|      CODE QUEST       |\n");
+	printf("|                       |\n");
+	printf("+-----------------------+\n");
+	
+	return 0;
+	}
+msmohiti@matrix:~/IPC/codequest> clang week1.c
+msmohiti@matrix:~/IPC/codequest> c[Ka.out
++-----------------------+
+|                       |
+|      CODE QUEST       |
+|                       |
++-----------------------+
+msmohiti@matrix:~/IPC/codequest> exit
+exit
+
+Script done on Fri 20 May 2016 04:17:02 PM EDT

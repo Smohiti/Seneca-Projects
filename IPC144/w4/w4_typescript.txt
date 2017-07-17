@@ -1,0 +1,156 @@
+Script started on Fri 17 Jun 2016 12:14:29 PM EDT
+msmohiti@matrix:~/IPC/w4> whoami
+msmohiti
+msmohiti@matrix:~/IPC/w4> cat w4.c
+#include <stdio.h>
+void clearScreen(void){
+	int line = 0;
+	for(line = 1; line <=40; line++){
+		printf("\n");
+		}
+}
+void welcome(void){
+	
+        printf("\n--Main Menu--\n");
+	printf("\n0 - Welcome Screen\n");
+	printf("1 - New Game\n");
+        printf("2 - Load Game\n");
+        printf("3 - Exit\n");
+
+}
+	
+void welcomeScreen (void){
+	printf("Welcome To The Game, To Continue Press 1 To New Game, 2 To Load Gmae and 3 To Exit Game\n");
+}
+void newGame (void){
+        printf("Not Implemented\n");
+}
+void loadGame (void){
+        printf("Not Implemented\n");
+}
+
+int validate( int low, int high){
+	int sel  = 0 ;
+	printf("\nSelect:");
+	scanf("%d", &sel);
+	while(sel < low || sel > high){
+		printf("Invalid input, try again:");
+		scanf("%d", &sel);
+	}
+	return sel;		
+}
+int main (void){
+	int input = 0;
+        clearScreen();
+	welcome();
+	while( input == 0 || input == 1 || input == 2){
+		 input = validate(0,3);
+
+		if( input ==0){
+			welcomeScreen();
+			welcome();	
+		}	
+                else if( input == 1){
+                        newGame();
+               		welcome();
+		 }
+                else if(input == 2){
+                        loadGame();
+               		welcome();
+		 }
+                else {
+                        printf("Good Bye!\n");
+                }
+      }
+ 
+
+	return 0;
+}
+msmohiti@matrix:~/IPC/w4> clang w4.c
+msmohiti@matrix:~/IPC/w4> a.out
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Main Menu--
+
+0 - Welcome Screen
+1 - New Game
+2 - Load Game
+3 - Exit
+
+Select:6
+Invalid input, try again:0
+Welcome To The Game, To Continue Press 1 To New Game, 2 To Load Gmae and 3 To Exit Game
+
+--Main Menu--
+
+0 - Welcome Screen
+1 - New Game
+2 - Load Game
+3 - Exit
+
+Select:1
+Not Implemented
+
+--Main Menu--
+
+0 - Welcome Screen
+1 - New Game
+2 - Load Game
+3 - Exit
+
+Select:5
+Invalid input, try again:2
+Not Implemented
+
+--Main Menu--
+
+0 - Welcome Screen
+1 - New Game
+2 - Load Game
+3 - Exit
+
+Select:3
+Good Bye!
+msmohiti@matrix:~/IPC/w4> exit
+exit
+
+Script done on Fri 17 Jun 2016 12:16:12 PM EDT

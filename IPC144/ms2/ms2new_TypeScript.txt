@@ -1,0 +1,757 @@
+Script started on Fri 12 Aug 2016 07:52:27 PM EDT
+msmohiti@matrix:~/IPC/ms2> whoami
+msmohiti
+msmohiti@matrix:~/IPC/ms2> cat ms2new.c
+/*
+I declare that the attached assignment is wholly my own work in accordance with Seneca Academic Policy. No 
+part of this assignment has been copied manually or electronically from any other source (including web 
+sites) or distributed to other students
+Name: M.Saeed Mohiti       Student ID: 116236159 
+*/
+
+
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#define SIZE 10
+#define MinPrize 10
+#define MaxPrize 100
+#define MinGPrize 100
+#define MaxGprize 200
+
+void Srandom() {
+	srand(time(NULL));
+}
+
+// checks the user UserInp is numeric
+int GetValidInteger(int min, int max);
+//checks the user UserInp UserInp is  alphabetic 
+int GetValidCharacter(char min, char max);
+// ask user to type  the user name
+void initPlayer(int* PlayerScore, int PlayerPrize[], unsigned int* PlayerCount, char* PlayerName, int* PlayerPosition);
+// this function gets a random NUM inbetween the specified range
+int getRandom(int a, int b);
+//dice rolls, in range of 3
+unsigned int PlayerRoll();
+char GetTileType(unsigned int index);
+//chek the player position
+char getdisplaytile(unsigned int index, unsigned int PlayerPosition, char PlayerName);
+// print the tile
+void displayBoard(unsigned int size, unsigned int PlayerPosition, char PlayerName);
+//create prize
+void WinPrize(int PlayerPrize[], unsigned int *PlayerCount);
+// create grand prize
+void WinGPrize(int PlayerPrize[], unsigned int* PlayerCount);
+//create random NUM
+int LoseItem(int PlayerPrize[], unsigned int* PlayerCount);
+//check sum of all prize
+int checkout(int* PlayerScore, int PlayerPrize[], unsigned int* PlayerCount);
+//propmt user to enter letter to choose menue
+int PlayGame(unsigned int boardsize, int *PlayerScore, int PlayerPrize[], unsigned int *PlayerCount, char *PlayerName, int *PlayerPosition);
+
+
+int main(void){
+	Srandom();
+	unsigned int PlayerCount = 0;
+	char PlayerName, Pname, UserInp = 'o';
+	int PlayerPrize[SIZE] = {0};
+	int maxPoint = 100, PlayerScore = 0, PlayerPosition = 0, boardsize;
+	int k = 0, j = 2;
+	
+	do{
+		printf("Welcome to CHECKOUT\nMain Menu\n\np-(p)lay q-(q)uit r-inst(r)uctions s-HI(s)core:\n");
+		
+		scanf("%s", &UserInp);
+		if (UserInp == 'p'){
+			printf("Nunmebr of players is 1\n");
+			initPlayer(&PlayerScore, PlayerPrize, &PlayerCount, &PlayerName, &PlayerPosition);
+			printf("Enter board size: ");
+			scanf("%d", &boardsize);
+			PlayGame(boardsize, &PlayerScore, PlayerPrize, &PlayerCount, &PlayerName, &PlayerPosition);
+			k = k + PlayerPosition;		
+			
+			
+			do{			
+				j = PlayGame(boardsize, &PlayerScore, PlayerPrize, &PlayerCount, &PlayerName, &k);
+				
+				if (j==1){
+					printf("You won the game!\n");
+					maxPoint = PlayerScore;
+					Pname = PlayerName;			
+					break;
+				}
+				else if (j==0){
+					printf("You lost\n");
+					break;
+				}
+			} while (&PlayerPosition != 0);
+		}
+		switch(UserInp){
+		case 'r':
+			printf("Type a letter to enter the game\n\n");
+			break;
+		case 's':
+			printf("__\n"
+				"  \\_______\n"
+				"   \\++++++|\n"
+				"    \\=====|\n"
+				"     0--- 0\n");
+			printf("HIGH SCORE: %d Player Name: %c\n\n", maxPoint, Pname);
+			break;
+			
+		}
+	} while (UserInp != 'q');
+	printf("This game is so much more fun than bash...\n");
+	return 0;
+}
+int GetValidInteger(int min, int max) {
+	int UserInp = 0,valid=0;
+	valid=scanf("%d", &UserInp);
+	while(getchar()!='\n');
+	while (valid!=1 || UserInp < min || UserInp > max){
+	
+		printf("Invalid input, try again: ");
+		valid=scanf("%d", &UserInp);
+}
+	return UserInp;
+}
+ 
+int GetValidCharacter(char min, char max) {
+	char UserInp;;
+	scanf("%c", &UserInp);
+	 while (UserInp < min || UserInp > max)
+	 {
+		printf("Invalid input, try again: ");
+		scanf("%c", &UserInp);}
+	return UserInp;
+}
+void initPlayer(int* PlayerScore, int PlayerPrize[], unsigned int*
+	PlayerCount, char* PlayerName, int* PlayerPosition) {
+	*PlayerScore = 0;
+	PlayerPrize[SIZE] = 0;
+	*PlayerCount = 0;
+	*PlayerPosition = 0;
+	printf("Enter player ID: ");
+	scanf("%s", &*PlayerName);
+}
+int getRandom(int a, int b) {
+	int random = 0;
+	random = a + rand() % (b + 1 - a);
+	return random;
+}
+unsigned int PlayerRoll()
+{
+	printf("your turn, how many dice will you roll? ");
+	unsigned int i, diceNumbers = GetValidInteger(1, 3), diceSum = 0, rollResult;
+	printf("You rolled:");
+	for (i = 0; i < diceNumbers; i++) {
+		rollResult = 1 + (rand() % 6);
+		printf(" %d", rollResult);
+		diceSum += rollResult;
+	}
+	printf("\n");
+	return diceSum;
+}
+
+char GetTileType(unsigned int index) {
+	char letter;
+	if (index == 0) 
+		letter = 'C';
+	else if (index % 7 == 0) 
+		letter = 'G';
+	else if (index % 5 == 0) 
+		letter = 'L';
+	else if (index % 3 == 0) 
+		letter = 'W';
+	else 
+		letter = ' ';
+	return letter;
+}
+
+char getdisplaytile(unsigned int index, unsigned int PlayerPosition, char PlayerName) {
+	if (index != PlayerPosition) {
+		char letter = GetTileType(index);
+		return letter;
+	}
+	else
+		return PlayerName;
+}
+void displayBoard(unsigned int size, unsigned int PlayerPosition, char PlayerName) {
+	
+	const int NUM = size;
+	int i, j, count, ppos = 0;
+	int numerator = ((NUM * 4) - 5);
+	int numerator1 = size;
+	
+	
+	ppos = PlayerPosition;
+
+	
+	for (count = 0; count <= (size - 1); count++) {
+		printf(" ___ ");
+	}
+	printf("\n");
+	for (count = 0; count <= (size - 1); count++) {
+		printf("| %c |", getdisplaytile(count, ppos, PlayerName));
+//		printf(" test %c %d \n",PlayerName, ppos);
+	}
+	printf("\n");
+	for (count = 0; count <= (size - 1); count++) {
+		printf("|___|");
+	}
+	printf("\n");
+	
+	for (j = 0; j < (NUM - 2); j++) {
+		printf(" ___ ");
+		for (i = 0; i < (NUM - 2); i++)
+			printf("     ");
+		printf(" ___ ");
+		printf("\n");
+		printf("| %c |", getdisplaytile(numerator, ppos, PlayerName));
+		for (i = 0; i < (NUM - 2); i++)
+			printf("     ");
+		printf("| %c |", getdisplaytile(numerator1, ppos, PlayerName));
+		printf("\n");
+		printf("|___|");
+		for (i = 0; i < (NUM - 2); i++)
+			printf("     ");
+		printf("|___|");
+		printf("\n");
+		numerator--;
+		numerator1++;
+	}
+	
+	for (count = ((NUM * 2) + (NUM - 3)); count >= ((NUM * 2) - 2); count--)
+		printf(" ___ ");
+	printf("\n");
+	for (count = ((NUM * 2) + (NUM - 3)); count >= ((NUM * 2) - 2); count--)
+		printf("| %c |", getdisplaytile(count, ppos, PlayerName));
+	printf("\n");
+	for (count = ((NUM * 2) + (NUM - 3)); count >= ((NUM * 2) - 2); count--)
+		printf("|___|");
+	printf("\n");
+}
+
+void WinPrize(int PlayerPrize[], unsigned int* PlayerCount)
+{
+	if (*PlayerCount == SIZE) {
+		printf("sorry, your inventory is full.\n");
+		return;
+	}
+	else {
+		int prize = getRandom(MinPrize, MaxPrize);
+		PlayerPrize[(*PlayerCount)++] = prize;
+		printf("you won a prize of %d\n", prize);
+	}
+}
+
+void WinGPrize(int PlayerPrize[], unsigned int* PlayerCount)
+{
+	if (*PlayerCount == SIZE) {
+		printf("sorry, your inventory is full.\n");
+		return;
+	}
+	else {
+		int prize = getRandom(MinGPrize, MaxGprize);
+		PlayerPrize[(*PlayerCount)++] = prize;
+		printf("you won a grand prize of %d\n", prize);
+	}
+}
+
+int LoseItem(int PlayerPrize[], unsigned int* PlayerCount) {
+	int itemsSeen, numerator, VAR;
+	if (*PlayerCount > 0) {
+		Srandom();
+		int t = getRandom(1, *PlayerCount);
+		int amount = PlayerPrize[t - 1];
+		for (numerator = t - 1; numerator < *PlayerCount; numerator++) {
+			PlayerPrize[numerator] = PlayerPrize[numerator + 1];
+		}
+		*PlayerCount -= 1;
+		printf("You lose a prize valued at $%d!\n", amount);
+	}
+	return VAR;
+}
+
+int checkout(int* PlayerScore, int PlayerPrize[], unsigned int* PlayerCount) {
+	int a;
+	*PlayerScore = PlayerPrize[0] + PlayerPrize[1] + PlayerPrize[2] + PlayerPrize[3] + PlayerPrize[4] + PlayerPrize[5] + PlayerPrize[6] + PlayerPrize[7] + 
+PlayerPrize[8] + PlayerPrize[9];
+	if (*PlayerScore >= 200)
+		a = 1;
+	else
+		a = 0;
+	return a;
+}
+int PlayGame(unsigned int boardsize, int *PlayerScore, int PlayerPrize[], unsigned
+	int *PlayerCount, char *PlayerName, int *PlayerPosition) {
+	displayBoard(boardsize, *PlayerPosition, *PlayerName);
+	printf("Score: %d", *PlayerScore);
+	printf("  Inventory(%d items): ", *PlayerCount);
+	for (int i = 0; i < *PlayerCount; i++)
+		printf("%d, ", PlayerPrize[i]);
+	printf("\n");
+	int a = PlayerRoll();
+	int c = 2;
+	int round = (boardsize * 4 - 4);
+	*PlayerPosition = *PlayerPosition + a;
+	while (*PlayerPosition >= round)
+		*PlayerPosition = *PlayerPosition - (round);
+	int name = *PlayerName;
+	int sum = 0;
+
+	/*
+	switch (GetTileType) {
+	case 'W':
+	GetTileType(*PlayerPosition);
+	WinPrize(PlayerPrize, PlayerCount);
+	break;
+	case 'L':
+	GetTileType(*PlayerPosition);
+	LoseItem(PlayerPrize, PlayerCount);
+	break;
+	case 'G':
+	GetTileType(*PlayerPosition);
+	WinGPrize(PlayerPrize, PlayerCount);
+	break;
+	default:
+	GetTileType(*PlayerPosition);
+	printf("Nothing happens, go again.\n");
+	break;
+	}
+	*/
+
+	if (*PlayerPosition == 0) {
+		c = checkout(PlayerScore, PlayerPrize, PlayerCount);
+		printf("You checkedout!\n");
+	}
+
+	if (GetTileType(*PlayerPosition) == ' ')
+		printf("Nothing happens, go again.\n");
+	if (GetTileType(*PlayerPosition) == 'W')
+		WinPrize(PlayerPrize, PlayerCount);
+	if (GetTileType(*PlayerPosition) == 'L')
+		LoseItem(PlayerPrize, PlayerCount);
+	if (GetTileType(*PlayerPosition) == 'G')
+		WinGPrize(PlayerPrize, PlayerCount);
+	*PlayerScore = PlayerPrize[0] + PlayerPrize[1] + PlayerPrize[2] + PlayerPrize[3] + PlayerPrize[4] + PlayerPrize[5] + PlayerPrize[6] + PlayerPrize[7] + 
+PlayerPrize[8] + PlayerPrize[9];
+	printf("\n");
+	return c;
+}
+msmohiti@matrix:~/IPC/ms2> clang ms2new.c
+msmohiti@matrix:~/IPC/ms2> a.out
+Welcome to CHECKOUT
+Main Menu
+
+p-(p)lay q-(q)uit r-inst(r)uctions s-HI(s)core:
+p
+Nunmebr of players is 1
+Enter player ID: @
+Enter board size: 5
+ ___  ___  ___  ___  ___ 
+| @ ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 0  Inventory(0 items): 
+your turn, how many dice will you roll? 4
+Invalid input, try again: 0
+Invalid input, try again: 9
+Invalid input, try again: lol
+Invalid input, try again: 3
+You rolled: 6 5 1
+you won a prize of 27
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| @ ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 27  Inventory(1 items): 27, 
+your turn, how many dice will you roll? 2
+You rolled: 2 1
+You lose a prize valued at $27!
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| @ |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 0  Inventory(0 items): 
+your turn, how many dice will you roll? 3
+You rolled: 3 3 2
+you won a grand prize of 197
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | @ |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 197  Inventory(1 items): 197, 
+your turn, how many dice will you roll? 1
+You rolled: 6
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+| @ |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 197  Inventory(1 items): 197, 
+your turn, how many dice will you roll? 1
+You rolled: 6
+you won a prize of 46
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || @ ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 243  Inventory(2 items): 197, 46, 
+your turn, how many dice will you roll? 3
+You rolled: 5 4 1
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+| @ |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 243  Inventory(2 items): 197, 46, 
+your turn, how many dice will you roll? 1
+You rolled: 1
+you won a grand prize of 180
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| @ |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 423  Inventory(3 items): 197, 46, 180, 
+your turn, how many dice will you roll? 1
+You rolled: 3
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C || @ ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 423  Inventory(3 items): 197, 46, 180, 
+your turn, how many dice will you roll? 1
+You rolled: 1
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   || @ || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 423  Inventory(3 items): 197, 46, 180, 
+your turn, how many dice will you roll? 3
+You rolled: 6 1 5
+you won a grand prize of 191
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| @ |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 614  Inventory(4 items): 197, 46, 180, 191, 
+your turn, how many dice will you roll? 1
+You rolled: 4
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   || @ || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 614  Inventory(4 items): 197, 46, 180, 191, 
+your turn, how many dice will you roll? 3
+You rolled: 3 3 5
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+| @ |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 614  Inventory(4 items): 197, 46, 180, 191, 
+your turn, how many dice will you roll? 3
+You rolled: 2 4 5
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W || @ |
+|___||___||___||___||___|
+Score: 614  Inventory(4 items): 197, 46, 180, 191, 
+your turn, how many dice will you roll? 3
+You rolled: 6 5 2
+You lose a prize valued at $180!
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | @ |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 434  Inventory(3 items): 197, 46, 191, 
+your turn, how many dice will you roll? 2
+You rolled: 2 4
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W || @ || L || W ||   |
+|___||___||___||___||___|
+Score: 434  Inventory(3 items): 197, 46, 191, 
+your turn, how many dice will you roll? 3
+You rolled: 2 4 4
+You lose a prize valued at $197!
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | @ |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 237  Inventory(2 items): 46, 191, 
+your turn, how many dice will you roll? 1
+You rolled: 4
+you won a prize of 91
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W ||   |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || @ ||   |
+|___||___||___||___||___|
+Score: 328  Inventory(3 items): 46, 191, 91, 
+your turn, how many dice will you roll? 2
+You rolled: 5 6
+Nothing happens, go again.
+
+ ___  ___  ___  ___  ___ 
+| C ||   ||   || W || @ |
+|___||___||___||___||___|
+ ___                 ___ 
+| L |               | L |
+|___|               |___|
+ ___                 ___ 
+| G |               | W |
+|___|               |___|
+ ___                 ___ 
+|   |               | G |
+|___|               |___|
+ ___  ___  ___  ___  ___ 
+| W ||   || L || W ||   |
+|___||___||___||___||___|
+Score: 328  Inventory(3 items): 46, 191, 91, 
+your turn, how many dice will you roll? 3
+You rolled: 5 3 4
+You checkedout!
+
+You won the game!
+
+Main Menu
+
+p-(p)lay q-(q)uit r-inst(r)uctions s-HI(s)core:
+s
+__
+  \_______
+   \++++++|
+    \=====|
+     0--- 0
+HIGH SCORE: 328 Player Name: @  
+
+Main Menu
+
+p-(p)lay q-(q)uit r-inst(r)uctions s-HI(s)core:
+q
+This game is so much more fun than bash...
+msmohiti@matrix:~/IPC/ms2> exit
+exit
+
+Script done on Fri 12 Aug 2016 07:57:18 PM EDT

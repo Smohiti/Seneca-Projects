@@ -1,0 +1,100 @@
+Script started on Sat 09 Jul 2016 10:26:34 PM EDT
+msmohiti@matrix:~/IPC/w6> whoami
+msmohiti
+msmohiti@matrix:~/IPC/w6> cat w6.c
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <time.h>
+void clearbuffer() {
+	int next = 0;
+	while (next != '\n'){
+              next =getchar();
+	}
+}
+
+
+void seedrandom(){
+	srand(time(NULL));
+}
+
+float getrandom (float a, float b){
+        double x;
+        x = a + ((double) rand() / RAND_MAX * (b - a));
+//      printf("DEBUG;Random number is %.2lf\n", x);
+	return x;
+}
+
+int main() {
+    	int contin = 0;
+    	float strengthS ,speedS , defenceS , intelligenceS;
+    	float level = 0, hp = 0;
+
+	do{	
+		seedrandom();		
+		strengthS = getrandom(0.15,0.5);
+		speedS = getrandom(0.15,0.5);
+		defenceS = getrandom(0.15,0.5);
+		intelligenceS = getrandom(0.15,0.5);
+		level = getrandom(3.0,20.0);
+        	hp = getrandom(0.5,2.0);
+		
+//       	printf("DEBUG  ;%.1f , %.1f , %.1f , %.1f , %.1f , %.1f\n",strengthS,speedS,defenceS,intelligenceS,level,hp);
+        	printf("Enemy Generator\n\n");
+        
+        	printf(" Level        - %0.f\n", level);
+        	printf(" HP           - %0.f\n", hp*level);
+        	printf(" Strength     - %0.f\n", strengthS * level*level);
+        	printf(" Speed        - %0.f\n", speedS * level*level);
+        	printf(" Defence      - %0.f\n", defenceS * level*level);
+        	printf(" Intelligence - %0.f\n", intelligenceS * level*level);
+        	printf("\n Generate Another?");
+		scanf("%d", &contin);
+		clearbuffer();
+			while (contin != 1 && contin != 2) {
+	        		printf(" Invalid input  ");
+			        scanf("%d",&contin);
+				clearbuffer();
+				
+	        	}
+	}
+	while (contin !=2);
+	return 0;
+}
+msmohiti@matrix:~/IPC/w6> clang w6.c
+msmohiti@matrix:~/IPC/w6> a.out
+Enemy Generator
+
+ Level        - 9
+ HP           - 11
+ Strength     - 30
+ Speed        - 31
+ Defence      - 33
+ Intelligence - 37
+
+ Generate Another?jhff
+ Invalid input  4
+ Invalid input  1
+Enemy Generator
+
+ Level        - 17
+ HP           - 15
+ Strength     - 97
+ Speed        - 93
+ Defence      - 61
+ Intelligence - 141
+
+ Generate Another?2 1
+Enemy Generator
+
+ Level        - 18
+ HP           - 33
+ Strength     - 82
+ Speed        - 136
+ Defence      - 147
+ Intelligence - 85
+
+ Generate Another?2
+msmohiti@matrix:~/IPC/w6> exit
+exit
+
+Script done on Sat 09 Jul 2016 10:27:57 PM EDT
