@@ -1,0 +1,149 @@
+/sbin/ifconfig -a
+eth0      Link encap:Ethernet  HWaddr 00:0C:29:D2:EB:0F  
+          inet addr:192.168.1.58  Bcast:192.168.1.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:211816 errors:0 dropped:367 overruns:0 frame:0
+          TX packets:228003 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:48742394 (46.4 Mb)  TX bytes:1905481888 (1817.2 Mb)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:12870 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:12870 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:878786 (858.1 Kb)  TX bytes:878786 (858.1 Kb)
+
+=+=+=
+ping 127.0.0.1 -w 5
+PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.063 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.052 ms
+64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.061 ms
+64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.059 ms
+64 bytes from 127.0.0.1: icmp_seq=5 ttl=64 time=0.060 ms
+64 bytes from 127.0.0.1: icmp_seq=6 ttl=64 time=0.059 ms
+
+--- 127.0.0.1 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 4998ms
+rtt min/avg/max/mdev = 0.052/0.059/0.063/0.003 ms
+=+=+=
+ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 brd 127.255.255.255 scope host lo
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:d2:eb:0f brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.58/24 brd 192.168.1.255 scope global eth0
+=+=+=
+ping 192.168.1.58 -w 2
+PING 192.168.1.58 (192.168.1.58) 56(84) bytes of data.
+64 bytes from 192.168.1.58: icmp_seq=1 ttl=64 time=0.068 ms
+64 bytes from 192.168.1.58: icmp_seq=2 ttl=64 time=0.054 ms
+64 bytes from 192.168.1.58: icmp_seq=3 ttl=64 time=0.072 ms
+
+--- 192.168.1.58 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 1998ms
+rtt min/avg/max/mdev = 0.054/0.064/0.072/0.012 ms
+=+=+=
+/sbin/arp -a
+logserver.matrix (192.168.1.96) at 00:1e:8c:27:a8:af [ether] on eth0
+nis.matrix (192.168.1.30) at 00:0c:29:65:0f:b1 [ether] on eth0
+gateway.matrix (192.168.1.254) at 00:0c:29:57:e4:8c [ether] on eth0
+server1.matrix (192.168.1.1) at 00:0c:29:c4:25:7a [ether] on eth0
+server2.matrix (192.168.1.2) at 00:0c:29:8d:f2:11 [ether] on eth0
+server3.matrix (192.168.1.3) at 00:0c:29:ba:95:ec [ether] on eth0
+monitor.matrix (192.168.1.50) at 00:0e:0c:82:9f:9f [ether] on eth0
+=+=+=
+/sbin/arp 192.168.1.53
+192.168.1.53 (192.168.1.53) -- no entry
+=+=+=
+ping -b 192.168.1.255 -w 1
+PING 192.168.1.255 (192.168.1.255) 56(84) bytes of data.
+
+--- 192.168.1.255 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+=+=+=
+/sbin/arp -a
+server1.matrix (192.168.1.1) at 00:0c:29:c4:25:7a [ether] on eth0
+gateway.matrix (192.168.1.254) at 00:0c:29:57:e4:8c [ether] on eth0
+server2.matrix (192.168.1.2) at 00:0c:29:8d:f2:11 [ether] on eth0
+server3.matrix (192.168.1.3) at 00:0c:29:ba:95:ec [ether] on eth0
+nis.matrix (192.168.1.30) at 00:0c:29:65:0f:b1 [ether] on eth0
+nis-1.matrix (192.168.1.31) at 00:0c:29:65:0f:b1 [ether] on eth0
+monitor.matrix (192.168.1.50) at 00:0e:0c:82:9f:9f [ether] on eth0
+logserver.matrix (192.168.1.96) at 00:1e:8c:27:a8:af [ether] on eth0
+=+=+=
+ping www.yahoo.com -w2
+PING atsv2-fp.wg1.b.yahoo.com (98.139.183.24) 56(84) bytes of data.
+64 bytes from ir2.fp.vip.bf1.yahoo.com (98.139.183.24): icmp_seq=1 ttl=51 time=5.42 ms
+64 bytes from ir2.fp.vip.bf1.yahoo.com (98.139.183.24): icmp_seq=2 ttl=51 time=5.62 ms
+
+--- atsv2-fp.wg1.b.yahoo.com ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 5.425/5.523/5.621/0.098 ms
+=+=+=
+/sbin/arp -a
+server1.matrix (192.168.1.1) at 00:0c:29:c4:25:7a [ether] on eth0
+gateway.matrix (192.168.1.254) at 00:0c:29:57:e4:8c [ether] on eth0
+server2.matrix (192.168.1.2) at 00:0c:29:8d:f2:11 [ether] on eth0
+server3.matrix (192.168.1.3) at 00:0c:29:ba:95:ec [ether] on eth0
+nis.matrix (192.168.1.30) at 00:0c:29:65:0f:b1 [ether] on eth0
+nis-1.matrix (192.168.1.31) at 00:0c:29:65:0f:b1 [ether] on eth0
+monitor.matrix (192.168.1.50) at 00:0e:0c:82:9f:9f [ether] on eth0
+logserver.matrix (192.168.1.96) at 00:1e:8c:27:a8:af [ether] on eth0
+=+=+=
+netstat -rn
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+0.0.0.0         192.168.1.254   0.0.0.0         UG        0 0          0 eth0
+127.0.0.0       0.0.0.0         255.0.0.0       U         0 0          0 lo
+169.254.0.0     0.0.0.0         255.255.0.0     U         0 0          0 eth0
+192.168.1.0     0.0.0.0         255.255.255.0   U         0 0          0 eth0
+=+=+=
+ping -c10 space.mit.edu
+PING space.mit.edu (18.75.0.10) 56(84) bytes of data.
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=1 ttl=241 time=18.7 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=2 ttl=241 time=19.0 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=3 ttl=241 time=18.7 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=4 ttl=241 time=18.9 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=5 ttl=241 time=19.0 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=6 ttl=241 time=19.1 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=7 ttl=241 time=18.7 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=8 ttl=241 time=19.0 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=9 ttl=241 time=18.9 ms
+64 bytes from space.mit.edu (18.75.0.10): icmp_seq=10 ttl=241 time=19.1 ms
+
+--- space.mit.edu ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9012ms
+rtt min/avg/max/mdev = 18.711/18.951/19.190/0.159 ms
+=+=+=
+ping -c10 www.nasa.gov
+PING iznasa.hs.llnwd.net (208.111.182.90) 56(84) bytes of data.
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=1 ttl=55 time=2.81 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=2 ttl=55 time=2.87 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=3 ttl=55 time=2.57 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=4 ttl=55 time=3.00 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=5 ttl=55 time=2.70 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=6 ttl=55 time=2.60 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=7 ttl=55 time=2.86 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=8 ttl=55 time=2.81 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=9 ttl=55 time=2.67 ms
+64 bytes from https-208-111-182-90.yyz.llnw.net (208.111.182.90): icmp_seq=10 ttl=55 time=2.96 ms
+
+--- iznasa.hs.llnwd.net ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9015ms
+rtt min/avg/max/mdev = 2.571/2.789/3.006/0.152 ms
+=+=+=
+ping -c10 cs.wisc.edu
+PING cs.wisc.edu (128.105.2.6) 56(84) bytes of data.
+
+--- cs.wisc.edu ping statistics ---
+10 packets transmitted, 0 received, 100% packet loss, time 9072ms
+
+=+=+=
+finger nasanews@space.mit.edu
+=+=+=
+finger coke@cs.wisc.edu
