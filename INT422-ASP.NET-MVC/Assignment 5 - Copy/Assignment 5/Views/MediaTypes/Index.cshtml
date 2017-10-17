@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Assignment_5.Controllers.MediaTypeBase>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>List of Media Types</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+
+        </tr>
+    }
+
+</table>
