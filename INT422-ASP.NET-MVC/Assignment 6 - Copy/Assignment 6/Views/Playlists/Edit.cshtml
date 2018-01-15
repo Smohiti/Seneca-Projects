@@ -1,0 +1,67 @@
+﻿@model Assignment_6.Controllers.PlaylistEditTracksForm
+
+@{
+    ViewBag.Title = "Edit";
+    var name = Model.Name;
+}
+
+<h2>Edit Playlist - <span class="bg-info">@name</span></h2>
+<h4>Select tracks,and click the "Save changes" button</h4>
+<hr />
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-default" />
+            @Html.ActionLink("Back to details", "Details", new { id = Model.PlaylistId })|
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.PlaylistId)
+
+        <div class="row">
+            <div class="col-md-8">
+                <p>All Tracks</p>
+                <p>
+                    @foreach (var track in Model.TrackList)
+                    {
+                        <label><input type="checkbox" name="TrackIds" value="@track.Value" checked="@track.Selected" />@track.Text &nbsp;&nbsp;</label><br />
+                    }
+                </p>
+
+            </div>
+            <div class="col-md-4 well">
+                <h4>Now on Playlist <span class="badge">@Html.DisplayFor(model => model.TracksCount)</span></h4>
+                @if (Model.Tracks.Count() > 0)
+                {
+                    foreach (var track in Model.Tracks)
+                    {
+                        <p>@track.Name</p><br />
+                    }
+                }
+
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
