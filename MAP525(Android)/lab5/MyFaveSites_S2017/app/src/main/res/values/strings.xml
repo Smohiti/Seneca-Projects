@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">MyFaveSites!!!</string>
+
+    <string-array name="description_array">
+        <item>YouTube a cool site for old people </item>
+        <item>Google a cool site to search for google</item>
+        <item>Twiter a cool site to broadcast messages</item>
+    </string-array>
+    <string-array name="url_array">
+        <item>https://www.youtube.com/</item>
+        <item>https://www.google.com/</item>
+        <item>https://twitter.com/</item>
+
+    </string-array>
+
+    <string name="menuHelp">
+      <item>This application allowes the user to select different website: 1st option will lunch the
+          YouTube, 2nd option will lunch the Google, and 3rd option will lunch the Twitter</item>
+    </string>
+
+
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.mareklaskowski.workshop2_summer2017">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!--
+        the presence of the element below, tells the OS that there's a second Activity in 
+        our app
+        -->
+        <activity android:name=".SecondActivity">
+            <!-- xml tags in here describe the second activity -->
+            <!-- we need an intent filter in order for SecondActivity to receive or handle our implicit intent -->
+            <intent-filter>
+                <!-- every intent filter needs an action and a category -->
+                <action android:name="com.seneca.lab2b.marek"/>
+                <!-- for our custom implict intents, the category is always DEFAULT -->
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <!-- third activity element below -->
+        <activity android:name=".ThirdActivity">
+
+
+        </activity>
+    </application>
+
+</manifest>
