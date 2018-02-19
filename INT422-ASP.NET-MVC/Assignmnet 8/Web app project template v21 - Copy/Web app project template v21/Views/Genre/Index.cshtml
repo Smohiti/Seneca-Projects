@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Web_app_project_template_v21.Controllers.GenreBase>
+
+@{
+    ViewBag.Title = "Genre List";
+}
+<h2>Genre List</h2>
+
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+
+        <li class="list-group-item">
+            @Html.DisplayFor(modelItem => item.Name)
+        </li>
+
+    }
+</ul>
+
+
+
+

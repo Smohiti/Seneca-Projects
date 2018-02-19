@@ -1,0 +1,73 @@
+﻿@model Web_app_project_template_v21.Controllers.AlbumWithDetail
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details of Album => @Html.DisplayFor(model => model.Name)</h2>
+<p>
+    @Html.ActionLink("Create New Track", "AddTrack")
+</p>
+<div>
+    <h4>Album Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ReleaseDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ReleaseDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UrlAlbum)
+        </dt>
+        <dd>
+            <img src="@Html.DisplayFor(modelItem => modelItem.UrlAlbum)" alt="@Html.DisplayFor(modelItem => modelItem.UrlAlbum)" height="100" width="100">
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Genre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Genre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Coordinator)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Coordinator)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Artists)
+        </dt>
+        <dd>
+            @foreach (var a in Model.Artists)
+            {
+                var artist = a.Name;
+                <span>@artist</span><br />
+            }
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Tracks)
+        </dt>
+        <dd>
+            @foreach (var t in Model.Tracks)
+            {
+                var track = t.Name;
+                <span>@track</span><br />
+            }
+        </dd>
+    </dl>
+</div>
+<p>
+
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary btn-sm" })
+</p>

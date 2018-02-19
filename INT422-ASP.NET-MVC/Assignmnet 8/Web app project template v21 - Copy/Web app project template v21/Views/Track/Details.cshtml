@@ -1,0 +1,81 @@
+﻿@model Web_app_project_template_v21.Controllers.TrackWithDetail
+
+@{
+    ViewBag.Title = "Details";
+
+    var count = 0;
+}
+<h2>Details for Track => @Html.DisplayFor(model => model.Name)</h2>
+<!--
+<p>
+    @Html.ActionLink("Create New", "AddTrack")
+</p>
+    -->
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Composers)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Composers)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Genre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Genre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Clerk)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Clerk)
+        </dd>
+
+
+        <dt>
+            # of Albums with this Track
+        </dt>
+        <dd>
+            @foreach (var a in Model.Albums)
+            {
+                count++;
+            }
+            @count
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Albums)
+        </dt>
+        <dd>
+            @foreach (var a in Model.Albums)
+            {
+                var Album = a.Name;
+                <span>@Album</span><br />
+            }
+        </dd>
+
+        <!--
+        <dt>
+            @Html.DisplayNameFor(model => model.Albums)
+        </dt>
+        <dd>
+            @foreach (var a in Model.Albums)
+            {
+                var Album = a.Name;
+                <span>@Album</span><br />
+            }
+        </dd>
+        -->
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-info btn-sm" }) |
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary btn-sm" })
+</p>
